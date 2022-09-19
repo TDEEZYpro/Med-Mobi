@@ -1,0 +1,69 @@
+{
+    "intents": [{
+            "tag": "salutation",
+            "patterns": ["Hi", "Hey", "Hello", "Hii", "Hola", "Ekse", "Hi there", "Anyone there", "Yo", "Whats up", "I am", "I'm", "Is anyone there", "Good morning", "Good day"],
+            "responses": ["Hey Stranger, what can i help you with?", "Good day, How can I help you", "Howzit, How can i assist you today?", "Hello you, How can I help?", "Hii you, How can I assist you today?", "Hey there, what would you like help with today?", "Whats up, How can i be of assistance to you?"]
+        },
+        {
+            "tag": "goodbye",
+            "patterns": [],
+            "responses": []
+        },
+        {
+            "tag": "name",
+            "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "what is this", "Who is this"],
+            "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, but my friends cal me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
+        },
+        {
+            "tag": "noanswer",
+            "patterns": [],
+            "responses": ["Anyone there...", "Please giver me more information", "Not sure i understand", "I'm still here", "I'm still here are you?", "Do still require more assistance"]
+        },
+        {
+            "tag": "options",
+            "patterns": ["What do you do", "How can you help", "what do you do", "What is your purpose", "What do you know", "Whats your job", "How do you work"],
+            "responses": ["I can book you an appointment with any available doctor nearby or prefered doctor in our system"]
+        },
+        {
+            "tag": "thanks",
+            "patterns": [],
+            "responses": []
+        },
+        {
+            "tag": "booking",
+            "patterns": ["I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
+            "responses": []
+        },
+        {
+            "tag": "reschedule",
+            "patterns": ["I want to reschedule", "i want to change my appointment", "i want a different date for my appointment date", "i want a different time for my appointment", "i want a new appointment", "I wont make it to my appointment", "i cant make it", "I cant make it to my appointment", "i want a new date for my appointment", "I dont want to see the doctor now", "I dont want to see a doctor today", "I want to change my appointment time", "i want to adjust my appointment", "I want to rearrange my appointment"],
+            "responses": []
+        },
+        {
+            "tag": "cancel",
+            "patterns": ["I want to cancel my appointment", "i want to postpone my appointment", "can i cancel my appointment", "i no longer need medical help", "I no longer need a doctor", "i want to terminate my appointment", "i won make it to my appointment", "I dont want this appointment", "I dont want to see a doctor"],
+            "responses": []
+        },
+        {
+            "tag": "checking",
+            "patterns": ["when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
+            "responses": []
+        },
+        {
+            "tag": "disease",
+            "patterns": [""],
+            "responses": []
+        },
+        {
+            "tag": "symptoms",
+            "patterns": [""],
+            "responses": []
+        },
+        {
+
+            "tag": "casue",
+            "patterns": ["when a patiants asks about specific symptoms"],
+            "responses": []
+        }
+    ]
+}
