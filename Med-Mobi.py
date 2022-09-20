@@ -9,8 +9,7 @@ import json
 import pickle
 
 from nltk.stem import WordNetLemmatizer
-from keras.models import Sequential
-#imports sequential model to train Med-Mo
+from keras.models import Sequential #imports sequential model to train Med-Mo
 from keras.layers import Dense, Activation, Dropout
 from keras.optimizers import SGD
 
