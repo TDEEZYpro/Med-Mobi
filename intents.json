@@ -6,8 +6,8 @@
         },
         {
             "tag": "goodbye",
-            "patterns": [],
-            "responses": []
+            "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
+            "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."]
         },
         {
             "tag": "name",
@@ -26,8 +26,8 @@
         },
         {
             "tag": "thanks",
-            "patterns": [],
-            "responses": []
+            "patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+            "responses": ["Happy to help!", "Any time!", "My pleasure"]
         },
         {
             "tag": "booking",

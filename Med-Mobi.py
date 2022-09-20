@@ -13,14 +13,17 @@ from keras.models import Sequential #imports sequential model to train Med-Mo
 from keras.layers import Dense, Activation, Dropout
 from keras.optimizers import SGD
 
+
 nltk.download('punkt')
 nltk.download('wordnet')
+nltk.download('omw-1.4')
 
+lemmatizer = WordNetLemmatizer()
 words = []
 classes = []
 documents = []
 words_ignore = []
-intent_data = open('C:\Users\tdeez\Documents\Med-Mobi\intents.json', encoding='utf-8').read()
+intent_data = open('intents.json', encoding='utf-8')
 intents = json.load(intent_data)
 
 for intent in intents['intents']:
