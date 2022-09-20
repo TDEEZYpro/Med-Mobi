@@ -2,13 +2,15 @@ import nltk
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 import pickle
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import numpy as np
 
 from keras.models import load_model
 model = load_model('chatbot_model.h5')
 import json
 import random
-intents = json.loads(open('job_intents.json', encoding='utf-8').read())
+intents = json.loads(open('intents.json', encoding='utf-8').read())
 words = pickle.load(open('words.pkl','rb'))
 classes = pickle.load(open('classes.pkl','rb'))
 
@@ -63,33 +65,5 @@ def chatbot_response(msg):
     res = getResponse(ints, intents)
     return res
 
-    ''' ..*. 
-#This function calculates the hihest probability that the response is close or equal to the pattern 
-#Instead of typing single response i think lets check the tags and check if words or sentence has a tag or not 
-def sentence_probability(user_intput, recognised_word):
-    certainty = 0
-    for word in user_intput:
-        if word in  recognised_word:
-            certainty +=1
-    
-    sentence_percnt = (float(certainty)/float(len(recognised_word)))*100
-
-#This functions opens the intents file(OR THE DOCUMENT )to understan the work
-def read_file():
-    intents_file = open(intents.json, encoding='utf-8').read()
-    return intents_file
-
-
-
-#This function breaks down user responses and returns the broken and separated version 
-def get_response (user_input):
-    #figure out how to let it ignore the space before and after puntuation
-    split_response = re.split('[\s,;?!.-]', user_input.lower())
-    return split_response
-
-#input1 = input('You: ')
-#splits = get_response(input1)
-#print(splits)
-
-while TRUE:
-    print('Mo: ' + get_response(input('You: ') ))'''
+while True:
+    print('Mo: ' + chatbot_response(input('You: ') ))
