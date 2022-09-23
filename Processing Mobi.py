@@ -50,10 +50,22 @@ def predict_class(sentence, model):
     return return_list
 
 def getResponse(ints, intents_json):
+    #this is the function whos if statement must be modified for scheduling and rescheduling and booking and medical inquries
+    #These functions work but im not sure cause my pc is acting up
     tag = ints[0]['intent']
     list_of_intents = intents_json['intents']
+    #This is how we need to code the pop-ups but we need this whole entire function to save inputed data
     for i in list_of_intents:
-        if(i['tag']== tag):
+        if(i['tag']== "booking"):
+            result = "Pop ups Should appear 1"
+            break
+        elif(i['tag']== "cancel"):
+            result = "Pop ups Should appear 2"
+            break
+        elif(i['tag']== "reschedule"):
+            result = "Pop ups Should appear 3"
+            break
+        elif(i['tag']== tag):
             result = random.choice(i['responses'])
             break
         else:
