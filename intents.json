@@ -12,7 +12,7 @@
         {
             "tag": "name",
             "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "what is this", "Who is this"],
-            "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, but my friends cal me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
+            "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, but my friends call me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
         },
         {
             "tag": "noanswer",
