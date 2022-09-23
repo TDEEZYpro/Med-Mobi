@@ -1,6 +1,5 @@
-#Training Mobi
+#Training Mobi THis is where we train our bot
 from ast import pattern
-#import selenium
 import numpy as np
 import nltk
 import string
