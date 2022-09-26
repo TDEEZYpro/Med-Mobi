@@ -41,7 +41,7 @@
         },
         {
             "tag": "cancel",
-            "patterns": ["I want to cancel my appointment", "i want to postpone my appointment", "can i cancel my appointment", "i no longer need medical help", "I no longer need a doctor", "i want to terminate my appointment", "i won make it to my appointment", "I dont want this appointment", "I dont want to see a doctor"],
+            "patterns": ["i want to cancel", "I want to cancel my appointment", "i want to postpone my appointment", "can i cancel my appointment", "i no longer need medical help", "I no longer need a doctor", "i want to terminate my appointment", "i won make it to my appointment", "I dont want this appointment", "I dont want to see a doctor"],
             "responses": []
         },
         {

@@ -56,12 +56,12 @@ def getResponse(ints, intents_json):
     list_of_intents = intents_json['intents']
     #This is how we need to code the pop-ups but we need this whole entire function to save inputed data
     for i in list_of_intents:
-        if(i['tag']== "booking"):
-            result = "Pop ups Should appear 1"
+        if(i['tag']== "cancel"):
+            result = "Pop ups Should appear 1.0"
             break
-        elif(i['tag']== "cancel"):
-            result = "Pop ups Should appear 2"
-            break
+        #elif(i['tag']=="booking"):
+            #result = "Pop ups Should appear 2.0"
+           # break
         elif(i['tag']== "reschedule"):
             result = "Pop ups Should appear 3"
             break
