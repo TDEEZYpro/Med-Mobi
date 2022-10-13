@@ -56,7 +56,17 @@ def getResponse(ints, intents_json):
     list_of_intents = intents_json['intents']
     #This is how we need to code the pop-ups but we need this whole entire function to save inputed data
     for i in list_of_intents:
-        if(i['tag']== tag):
+        #Now we can add functions in the if statements that will take from the next user input
+        if(i['tag']== 'booking' and i['tag']== tag):
+            result = 'Which day would you like to book for'
+            break
+        elif(i['tag']== 'cancel' and i['tag']== tag):
+            result = 'are you sure you want to cancel booking'
+            break
+        elif(i['tag']== 'reschedule' and i['tag']== tag):
+            result = 'to which day would you like to change to'
+            break
+        elif(i['tag']== tag):
             result = random.choice(i['responses'])
             break
         else:
