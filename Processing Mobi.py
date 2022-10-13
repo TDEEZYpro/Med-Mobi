@@ -58,18 +58,24 @@ def getResponse(ints, intents_json):
     for i in list_of_intents:
         #Now we can add functions in the if statements that will take from the next user input
         if(i['tag']== 'booking' and i['tag']== tag):
+            #needs calender and after will take user input through a function
             result = 'Which day would you like to book for'
             break
         elif(i['tag']== 'cancel' and i['tag']== tag):
+            #will use a function to determine if the is any booking anytime soon and will ask if you want to cancel this booking
             result = 'are you sure you want to cancel booking'
             break
         elif(i['tag']== 'reschedule' and i['tag']== tag):
+            #will have anothe if statement to determine if user has any booking still open to rebook for
+            #this will show current booking and display a calender of when next youd like to book
             result = 'to which day would you like to change to'
             break
         elif(i['tag']== tag):
+            #this is for any other intent like greetings, goodbyes and so on
             result = random.choice(i['responses'])
             break
         else:
+            #this is for an unrecognised intent
             result = "You must ask the right questions"
     return result
 

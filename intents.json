@@ -50,19 +50,8 @@
             "responses": []
         },
         {
-            "tag": "disease",
-            "patterns": [""],
-            "responses": []
-        },
-        {
-            "tag": "symptoms",
-            "patterns": [""],
-            "responses": []
-        },
-        {
-
-            "tag": "casue",
-            "patterns": ["when a patiants asks about specific symptoms"],
+            "tag": "medical-issue",
+            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease"],
             "responses": []
         }
     ]
