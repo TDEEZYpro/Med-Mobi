@@ -53,6 +53,11 @@
             "tag": "medical-issue",
             "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease"],
             "responses": []
+        },
+        {
+            "tag": "appointment",
+            "patterns": ["appointment", "booking", "appoint", "session", "consultation", "arrangement"],
+            "responses": ["if you want to book or cancel or reschedule an appointment please be descriptive (e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want torescheduleappointment')"]
         }
     ]
 }

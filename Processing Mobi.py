@@ -1,3 +1,4 @@
+from tabnanny import check
 import nltk
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -59,7 +60,26 @@ def getResponse(ints, intents_json):
         #Now we can add functions in the if statements that will take from the next user input
         if(i['tag']== 'booking' and i['tag']== tag):
             #needs calender and after will take user input through a function
-            result = 'Which day would you like to book for'
+            #Must check if date is not before today, if doctor will be availble and if time is fine
+     
+            import datetime
+            def check_date(user_date):
+                right_date = False
+                try:
+                    datetime.datetime.strptime(user_date, '%Y/%m/%d %H:%M')
+                    right_date = True
+                except ValueError:
+                    print('Mo: Incorrect date format please enter the date in the format: YYYY/MM/DD HH:MM, (e.g 2022/05/24:09:300)')
+                    right_date=False
+                
+                return right_date
+            correctDate = False
+            print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!')
+            print('Mo: What date would you like to book for\n Please enter the date in the format: YYYY/MM/DD HH:MM, for example 2022/05/24:09:30')
+            while correctDate == False:
+                book_date = input('You: ')
+                correctDate = check_date(book_date)
+            # result will me confirmation of booking
             break
         elif(i['tag']== 'cancel' and i['tag']== tag):
             #will use a function to determine if the is any booking anytime soon and will ask if you want to cancel this booking
@@ -76,7 +96,7 @@ def getResponse(ints, intents_json):
             break
         else:
             #this is for an unrecognised intent
-            result = "You must ask the right questions"
+            result = "Please ask the right questions or statement"
     return result
 
 def chatbot_response(msg):
