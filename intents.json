@@ -31,18 +31,18 @@
         },
         {
             "tag": "booking",
-            "patterns": ["I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
+            "patterns": ["book appointment", "book consultation", "I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
             "responses": []
         },
         {
             "tag": "reschedule",
-            "patterns": ["I want to reschedule", "i want to change my appointment", "i want a different date for my appointment date", "i want a different time for my appointment", "i want a new appointment", "I wont make it to my appointment", "i cant make it", "I cant make it to my appointment", "i want a new date for my appointment", "I dont want to see the doctor now", "I dont want to see a doctor today", "I want to change my appointment time", "i want to adjust my appointment", "I want to rearrange my appointment"],
+            "patterns": ["reschedule appointment", "reschedule consultation", "I want to reschedule", "i want to change my appointment", "i want a different date for my appointment date", "i want a different time for my appointment", "i want a new appointment", "I wont make it to my appointment", "i cant make it", "I cant make it to my appointment", "i want a new date for my appointment", "I dont want to see the doctor now", "I dont want to see a doctor today", "I want to change my appointment time", "i want to adjust my appointment", "I want to rearrange my appointment"],
             "responses": []
         },
         {
             "tag": "cancel",
-            "patterns": ["i want to cancel", "I want to cancel an appointment", "i want to postpone my appointment", "can i cancel my appointment", "i no longer need medical help", "I no longer need a doctor", "i want to terminate my appointment", "i won make it to my appointment", "I dont want this appointment", "I dont want to see a doctor"],
-            "responses": ["https: //www.youtube.com/results?search_query=ways+to+add%2Fintegrate+a+calender+in+my+system"]
+            "patterns": ["cancel appointment", "cancel consultation", "i want to cancel", "I want to cancel an appointment", "i want to postpone my appointment", "can i cancel my appointment", "i no longer need medical help", "I no longer need a doctor", "i want to terminate my appointment", "i won make it to my appointment", "I dont want this appointment", "I dont want to see a doctor"],
+            "responses": []
         },
         {
             "tag": "checking",
@@ -57,7 +57,7 @@
         {
             "tag": "appointment",
             "patterns": ["appointment", "booking", "appoint", "session", "consultation", "arrangement"],
-            "responses": ["if you want to book or cancel or reschedule an appointment please be descriptive (e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want torescheduleappointment')"]
+            "responses": ["if you want to book or cancel or reschedule an appointment please be descriptive \n(e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want torescheduleappointment')", "Please be more descriptive, do you want to 'cancel appointment' or 'book appointment' or 'reschedule appointment'"]
         }
     ]
 }
