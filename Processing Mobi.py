@@ -1,4 +1,9 @@
+from calendar import calendar
+import email
+from enum import auto
+from sqlite3 import DatabaseError
 from tabnanny import check
+from tokenize import Name
 import nltk
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
@@ -15,11 +20,72 @@ intents = json.loads(open('intents.json', encoding='utf-8').read())
 words = pickle.load(open('words.pkl','rb'))
 classes = pickle.load(open('classes.pkl','rb'))
 
+#  Database from firebase connction
+#follow th step on website
+#to get firebase installed onto pc
+#db is online
+#https://firebase.google.com/docs/admin/setup/#python
+#while running if a weird error occurs
+#use: pip install -U pycryptodome
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
+
+cred = credentials.Certificate("med-mobi-firebase.json")
+app = firebase_admin.initialize_app(cred)
+
+
+firestore_db = firestore.client()
+
+#get user data
+print("Please enter details")
+ID_Num_User = input("ID Number: ")
+Name_User = input("Name: ")
+Surname_User = input("Surname: ")
+Email_User = input("Email: ")
+Phone_Num_User = input("Phone Number: ")
+Med_Aid_User = input("Medical-Aid, yesor no? ")
+
+
+#add user to db
+user_doc_ref = firestore_db.collection(u'Patients').document(ID_Num_User)
+user_doc_ref.set({
+    u'ID Number' : ID_Num_User,
+    u'Name': Name_User,
+    u'Surname': Surname_User,
+    u'Email' : Email_User,
+    u'Phone Number': Phone_Num_User,
+    u'Medical aid': Med_Aid_User
+
+})
+
+
+## deleting from db
+# firestore_db.collection(u'Patients').document(u'new').delete()
+
+##reading of db, testing
+# patients_ref = firestore_db.collection(u'Patients')
+# Patients_docs = patients_ref.stream()
+
+# for doc in Patients_docs:
+#     print(f'{doc.id} => {doc.to_dict()}')
+
+##doctors_ref = firestore_db.collection(u'Doctors')
+#Doctors_docs = doctors_ref.stream()
+
+# for doc in Doctors_docs:
+#     print(f'{doc.id} => {doc.to_dict()}')
+    
+
+
 
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
     return sentence_words
+
+
+
 
 # return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
 
@@ -104,5 +170,5 @@ def chatbot_response(msg):
     res = getResponse(ints, intents)
     return res
 
-while True:
-    print('Mo: ' + chatbot_response(input('You: ') ))
+# while True:
+#     print('Mo: ' + chatbot_response(input('You: ') ))
