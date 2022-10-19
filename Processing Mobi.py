@@ -37,25 +37,47 @@ app = firebase_admin.initialize_app(cred)
 
 firestore_db = firestore.client()
 
-#get user data
+# #get user data
+# print("Please enter details")
+# ID_Num_User = input("ID Number: ")
+# Name_User = input("Name: ")
+# Surname_User = input("Surname: ")
+# Email_User = input("Email: ")
+# Phone_Num_User = input("Phone Number: ")
+# Med_Aid_User = input("Medical-Aid, yesor no? ")
+
+
+# #add user to db
+# user_doc_ref = firestore_db.collection(u'Patients').document(ID_Num_User)
+# user_doc_ref.set({
+#     u'ID Number' : ID_Num_User,
+#     u'Name': Name_User,
+#     u'Surname': Surname_User,
+#     u'Email' : Email_User,
+#     u'Phone Number': Phone_Num_User,
+#     u'Medical aid': Med_Aid_User
+
+# })
+
+#get doctor data
 print("Please enter details")
-ID_Num_User = input("ID Number: ")
-Name_User = input("Name: ")
-Surname_User = input("Surname: ")
-Email_User = input("Email: ")
-Phone_Num_User = input("Phone Number: ")
-Med_Aid_User = input("Medical-Aid, yesor no? ")
+Practice_Num = input("Practice Number: ")
+Initials_doc = input("Initials: ")
+Surname_doc = input("Surname: ")
+Email_doc = input("Email: ")
+Office_Num_doc = input("Office Number: ")
+Speci_doc = input("Specialization: ")
 
 
-#add user to db
-user_doc_ref = firestore_db.collection(u'Patients').document(ID_Num_User)
-user_doc_ref.set({
-    u'ID Number' : ID_Num_User,
-    u'Name': Name_User,
-    u'Surname': Surname_User,
-    u'Email' : Email_User,
-    u'Phone Number': Phone_Num_User,
-    u'Medical aid': Med_Aid_User
+#add doctor to db
+Dr_doc_ref = firestore_db.collection(u'Doctors').document(Practice_Num)
+Dr_doc_ref.set({
+    u'Practice Number':  Practice_Num,
+    u'Initials': Initials_doc,
+    u'Surname': Surname_doc,
+    u'Email': Email_doc,
+    u'Office Number': Office_Num_doc,
+    u'Specialization': Speci_doc
 
 })
 
