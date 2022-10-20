@@ -1,6 +1,7 @@
 from calendar import calendar
 import email
 from enum import auto
+from platform import python_branch
 from sqlite3 import DatabaseError
 from tabnanny import check
 from tokenize import Name
@@ -11,6 +12,7 @@ import pickle
 import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import numpy as np
+import datetime
 
 from keras.models import load_model
 model = load_model('chatbot_model.h5')
@@ -34,8 +36,7 @@ from firebase_admin import firestore
 cred = credentials.Certificate("med-mobi-firebase.json")
 app = firebase_admin.initialize_app(cred)
 
-
-firestore_db = firestore.client()
+db = firestore.client()
 
 # #get user data
 # print("Please enter details")
@@ -60,26 +61,27 @@ firestore_db = firestore.client()
 # })
 
 #get doctor data
-print("Please enter details")
-Practice_Num = input("Practice Number: ")
-Initials_doc = input("Initials: ")
-Surname_doc = input("Surname: ")
-Email_doc = input("Email: ")
-Office_Num_doc = input("Office Number: ")
-Speci_doc = input("Specialization: ")
+
+#print("Please enter details")
+#Practice_Num = input("Practice Number: ")
+#Initials_doc = input("Initials: ")
+#Surname_doc = input("Surname: ")
+#Email_doc = input("Email: ")
+#Office_Num_doc = input("Office Number: ")
+#Speci_doc = input("Specialization: ")
 
 
 #add doctor to db
-Dr_doc_ref = firestore_db.collection(u'Doctors').document(Practice_Num)
-Dr_doc_ref.set({
-    u'Practice Number':  Practice_Num,
-    u'Initials': Initials_doc,
-    u'Surname': Surname_doc,
-    u'Email': Email_doc,
-    u'Office Number': Office_Num_doc,
-    u'Specialization': Speci_doc
+#Dr_doc_ref = firestore_db.collection(u'Doctors').document(Practice_Num)
+#Dr_doc_ref.set({
+ #   u'Practice Number':  Practice_Num,
+  #  u'Initials': Initials_doc,
+   # u'Surname': Surname_doc,
+    #u'Email': Email_doc,
+    #u'Office Number': Office_Num_doc,
+    #u'Specialization': Speci_doc
 
-})
+#})
 
 
 ## deleting from db
@@ -98,16 +100,12 @@ Dr_doc_ref.set({
 # for doc in Doctors_docs:
 #     print(f'{doc.id} => {doc.to_dict()}')
     
-
-
+from firebase_admin import db
 
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
     return sentence_words
-
-
-
 
 # return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
 
@@ -138,6 +136,69 @@ def predict_class(sentence, model):
         return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
     return return_list
 
+# def validate_doc():
+#     #this takes the users input of the doctors name or surname or name and surname
+#     print('Mo: Please enter the surname of the doctor you want to book. e.g) "van der merwe" or "zulu"...')
+#     doc_input = input('You: ')
+#     sql= """ SELECT practice_num FROM doctors WHERE LOWER(surname) = :surname"""
+#     mycursor.execute(sql, {'surname': doc_input})
+#     pra_num = mycursor.fetchall()
+#     #This loop checks if more than one practice number was returned if so exception hande
+#     if len(pra_num.split())>1:
+#         print('Mo: oooh seems like the is too many doctors who share that surname.\nPlease enter the name AND surname of the doctor for a more accurate response. \n If you dont know the following information please type "n" for next.')
+#         doc_input = input('You: ')
+#         if doc_input =='n' or doc_input == 'N':
+#             print('Mo: please enter the doctors office email address to help my find your specific doctor.)
+#             doc_input = input('You: ')
+#             sql ="""SELEC practice_num FROM doctors WHERE LOWER(office_email = :email"""
+#             mycursor.execute(sql, {'email': doc_input})
+#             pra_num = mycursor.fetchall()
+#             if len(pra_num.split())>1 or len(pra_num.split())<1:
+#                 print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
+#                 print('Mo: ' + chatbot_response(input('You: ') ))
+#                 break
+#             else:
+#                 return pra_num
+#         else:
+#             doc_input = doc_input.split()
+#             sql= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN :surname AND LOWER(surname) IN :surname"""
+#             mycursor.execute(sql, {'surname': doc_input})
+#             pra_num = mycursor.fetchall()
+#                 if len(pra_num.split())>1 or len(pra_num.split())<1:
+#                     print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
+#                     print('Mo: ' + chatbot_response(input('You: ') ))
+#                     break
+#                 else:
+#                     return pra_num
+#                     break            
+#     elif len(pra_num.split())<1:
+#         print('Mo: Sorry seems like we dont have such a doctor in our system. \n Is there anything else i can help you with.')
+#         print('Mo: ' + chatbot_response(input('You: ') ))
+#         break
+#         #find option out
+#     else:
+#         return pra_num
+#         break
+
+# def avail_docs(date): 
+#     date = date.split()
+#     day = date[0]
+#     time = date[1]
+#     sql= """ SELECT  name, surname, specialization, DISTINCT office_phone, DISTINCT office_email FROM doctors, operational_days WHERE operation_type ='working' AND :time BETWEEN start_time AND end_time AND :day BETWEEN start_date AND end_date AND doctor_id = practice_num"""
+#     doctors = mycursor.execute(sql, {'date': date, 'time': time})
+#     return doctors
+        
+# def doc_status(practice_num):
+#     sql= """ SELECT operation_type FROM operational_days WHERE doctor_id = :num"""
+#     mycursor.execute(sql, {'num': practice_num})
+#     doc_status = mycursor.fetchall()
+#     return doc_status
+
+# def build_booking(doctor_num):
+#     select p.name, p.surname, booking_id, d.surname, start_date, end_date, reason
+#     from patients p,appointments a, doctors d
+#     where doctor_num = 
+
 def getResponse(ints, intents_json):
     #this is the function whos if statement must be modified for scheduling and rescheduling and booking and medical inquries
     #These functions work but im not sure cause my pc is acting up
@@ -150,78 +211,9 @@ def getResponse(ints, intents_json):
             #needs calender and after will take user input through a function
             #Must check if date is not before today, if doctor will be availble and if time is fine
      
-            import datetime
-            import mysql.connector
-            ''' ..*. 
-            def avail_docs(date): 
-                date=date.split()
-                day = date[0]
-                time = date[1]
-                sql= """ SELECT  name, surname, specialization, DISTINCT office_phone, DISTINCT office_email FROM doctors, operational_days WHERE operation_type ='working' AND :time BETWEEN start_time AND end_time AND :day BETWEEN start_date AND end_date AND doctor_id = practice_num"""
-                mycursor.execute(sql, {'date': date, 'time': time})
-                pra_num = mycursor.fetchal()
-
-            def doc_status(practice_num):
-                sql= """ SELECT operation_type FROM operational_days WHERE doctor_id = :num"""
-                mycursor.execute(sql, {'num': practice_num})
-                doc_status = mycursor.fetchall()
-                return doc_status
-
-            def build_booking(doctor_num):
-                select p.name, p.surname, booking_id, d.surname, start_date, end_date, reason
-                from patients p,appointments a, doctors d
-                where doctor_num = 
-
-            def browse_booking():
-                #all old bookings must be deleted after 4 hours 
-
-              '''
-    
-            ''' ..*.      
-            def validate_doc():
-                #this takes the users input of the doctors name or surname or name and surname
-                print('Mo: Please enter the surname of the doctor you want to book. e.g) "van der merwe" or "zulu"...')
-                doc_input = input('You: ')
-                sql= """ SELECT practice_num FROM doctors WHERE LOWER(surname) = :surname"""
-                mycursor.execute(sql, {'surname': doc_input})
-                pra_num = mycursor.fetchall()
-                if len(pra_num.split())>1:
-                    print('Mo: oooh seems like the is too many doctors who share that surname.\nPlease enter the name AND surname of the doctor for a more accurate response. \n If you dont know the following information please type "n" for next.')
-                    doc_input = input('You: ')
-                    if doc_input =='n' or doc_input == 'N':
-                        print('Mo: please enter the doctors office email address to help my find your specific doctor.)
-                        doc_input = input('You: ')
-                        sql ="""SELEC practice_num FROM doctors WHERE LOWER(office_email = :email"""
-                        mycursor.execute(sql, {'email': doc_input})
-                        pra_num = mycursor.fetchall()
-                        if len(pra_num.split())>1 or len(pra_num.split())<1:
-                            print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
-                            print('Mo: ' + chatbot_response(input('You: ') ))
-                            break
-                        else:
-                            return pra_num
-                    else:
-                        doc_input = doc_input.split()
-                        sql= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN :surname AND LOWER(surname) IN :surname"""
-                        mycursor.execute(sql, {'surname': doc_input})
-                        pra_num = mycursor.fetchall()
-                            if len(pra_num.split())>1 or len(pra_num.split())<1:
-                                print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
-                                print('Mo: ' + chatbot_response(input('You: ') ))
-                                break
-                            else:
-                                return pra_num
-                                break
-                                
-                elif len(pra_num.split())<1:
-                    print('Mo: Sorry seems like we dont have such a doctor in our system. \n Is there anything else i can help you with.')
-                    print('Mo: ' + chatbot_response(input('You: ') ))
-                    break
-                    #find option out
-                else:
-                    return pra_num
-                    break
-            '''   
+       
+##########################################################################################################################################################################
+ ####################Booking Appointments starts here######################################
             def check_date(user_date):
                 right_date = False
                 try:
@@ -245,14 +237,35 @@ def getResponse(ints, intents_json):
                 print('Mo: If you have a specific doctor please type "s" \nand if you would like to pick from available doctor on the day please type "d"')
                 doctor_name=input('You: ')
                 if doctor_name.lower() =='s' or doctor_name.lower() =='specific':
-                    #validate_doc()
+                    #prac_num == validate_doc()
+                    #status = doc_status(prac_num)
+                    #if status.lower()='working:
+                    #   build_booking(prac_num)
+                    #THEN WE NEED TO TAKE A CONFIRMATION FROM THE USER(Y/N)then we either store booking or clients start convistion from scatch if n
+                    #   break
+                    #elif status.lower()=='leave' or bool(status.lower()) ==False:
+                    #   print('Mo: Sorry seems like your doctor is not working on that day please pick another doctor or select any other available practisioner on the day.')
+                    #    break
+                    choice=True
                     break
+                elif doctor_name.lower() =='d':
+                    #avail_docs(book_date)
+                    #then user needs to select doctor and then we book
+                    choice=True
+                    break
+                else:
+                    print('Mo: Sorry the input you entered is invalid please try again.\nRemember enter"s" for Specific doctor OR "d" for available doctors on the Day')
+                    break
+
             break
-        
+##########################################################################################################################################################################
+####################Canciling Appointments starts here######################################
         elif(i['tag']== 'cancel' and i['tag']== tag):
             #will use a function to determine if the is any booking anytime soon and will ask if you want to cancel this booking
             result = 'are you sure you want to cancel booking'
             break
+##########################################################################################################################################################################
+####################Rescheduling Appointments starts here######################################
         elif(i['tag']== 'reschedule' and i['tag']== tag):
             #will have anothe if statement to determine if user has any booking still open to rebook for
             #this will show current booking and display a calender of when next youd like to book
@@ -272,5 +285,5 @@ def chatbot_response(msg):
     res = getResponse(ints, intents)
     return res
 
-# while True:
-#     print('Mo: ' + chatbot_response(input('You: ') ))
+while True:
+     print('Mo: ' + chatbot_response(input('You: ') ))
