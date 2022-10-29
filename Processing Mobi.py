@@ -35,71 +35,8 @@ from firebase_admin import firestore
 
 cred = credentials.Certificate("med-mobi-firebase.json")
 app = firebase_admin.initialize_app(cred)
-
 db = firestore.client()
 
-# #get user data
-# print("Please enter details")
-# ID_Num_User = input("ID Number: ")
-# Name_User = input("Name: ")
-# Surname_User = input("Surname: ")
-# Email_User = input("Email: ")
-# Phone_Num_User = input("Phone Number: ")
-# Med_Aid_User = input("Medical-Aid, yesor no? ")
-
-
-# #add user to db
-# user_doc_ref = firestore_db.collection(u'Patients').document(ID_Num_User)
-# user_doc_ref.set({
-#     u'ID Number' : ID_Num_User,
-#     u'Name': Name_User,
-#     u'Surname': Surname_User,
-#     u'Email' : Email_User,
-#     u'Phone Number': Phone_Num_User,
-#     u'Medical aid': Med_Aid_User
-
-# })
-
-#get doctor data
-
-#print("Please enter details")
-#Practice_Num = input("Practice Number: ")
-#Initials_doc = input("Initials: ")
-#Surname_doc = input("Surname: ")
-#Email_doc = input("Email: ")
-#Office_Num_doc = input("Office Number: ")
-#Speci_doc = input("Specialization: ")
-
-
-#add doctor to db
-#Dr_doc_ref = firestore_db.collection(u'Doctors').document(Practice_Num)
-#Dr_doc_ref.set({
- #   u'Practice Number':  Practice_Num,
-  #  u'Initials': Initials_doc,
-   # u'Surname': Surname_doc,
-    #u'Email': Email_doc,
-    #u'Office Number': Office_Num_doc,
-    #u'Specialization': Speci_doc
-
-#})
-
-
-## deleting from db
-# firestore_db.collection(u'Patients').document(u'new').delete()
-
-##reading of db, testing
-# patients_ref = firestore_db.collection(u'Patients')
-# Patients_docs = patients_ref.stream()
-
-# for doc in Patients_docs:
-#     print(f'{doc.id} => {doc.to_dict()}')
-
-##doctors_ref = firestore_db.collection(u'Doctors')
-#Doctors_docs = doctors_ref.stream()
-
-# for doc in Doctors_docs:
-#     print(f'{doc.id} => {doc.to_dict()}')
-    
 from firebase_admin import db
 
 def clean_up_sentence(sentence):
@@ -140,88 +77,125 @@ def predict_class(sentence, model):
 # def doc_status(number):
 #     #This gets the doctors practice number and returns hes status whether:
 #     #he/she is "working" or on "leave" or not in that day
-#     doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
-#     return doc_stat
+
+    #doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
+    
+    # doc_compr = db.collection('Operational_Days').where('Doctor_ID',"==",number)
+    # for doc in doc_compr:
+    #     doc_stat = u'{}'.format(doc.to_dict()['Operational_type'])
+    
+    # if bool(doc_stat) ==True:
+    #     print('Mo: Sorry your doctor is not working on that specific day')
+    # elif doc_stat.lower() == 'leave':
+    #      print('Mo: Sorry your doctor is not working on that specific day')
+    # else:
+    #     return doc_stat
     
 # def available_docs():
 #     #This takes on the start_date_time and end_date_time and displays all doctors who
 #     #are available on that day and displays all doctors available on that day 
-# def find_doc():
-#     #This function searchs for a specific doctor through, either by surname or name or name and surname or office email
+
+
+
+
+
+def find_doc():
+    # This function searchs for a specific doctor through, either by surname or name or name and surname or office email
 #     # then returns the doctors practice number when found for further use in booking
-#     print('Mo: The are 4 options:\n You can search your doctor by name, or surname, or name and surname or office email')
-#     print('To search your doctor by:\n name enter "n" \n surname enter "s"\n name and surname enter "c" office email enter "e"')
-#     if input('You: ').lower() == 'n':
-#         print('Mo: Please enter the Name of the doctor you want to book. e.g) "John" or "Dumi"...')
-#         doc = input('You: ')
-#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(name) = :doc"""
-#         if len(prac_num.split())>1:
-#             print('Mo: oooh seems like there are too many doctors who share that  Name.\nPlease enter a different input for a more accurate output')
-#         elif len(prac_num.split())<1:
-#             print('Mo: Sorry seems like we couldnt find your specific doctor ' +  doc +' please try again.')
-#         else:
-#             return pra_num
-#     elif input('You: ').lower() == 's':
-#         print('Mo: Please enter the Surname of the doctor you want to book. e.g) "van de merwe" or "zwane"...')
-#         doc = input('You: ')
-#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(surname) = :doc"""
-#         if len(prac_num.split())>1:
-#             print('Mo: oooh seems like there are too many doctors who share that  Surname.\nPlease enter a different input for a more accurate output')
-#         elif len(prac_num.split())<1:
-#             print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc  + ' please try again.')
-#         else:
-#             return pra_num
-#     elif input('You: ').lower() == 'c':
-#         print('Mo: Please enter the Name AND Surname of the doctor you want to book. e.g) "Chris Klopper" or "Frank Mahlangu"...')
-#         do = input('You: ')
-#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN (:doc) AND LOWER(surname) IN (:doc)"""
-#         if len(prac_num.split())>1:
-#             print('Mo: oooh seems like there are too many doctors who share that Name and Surname.\nPlease enter a different input for a more accurate output')
-#         elif len(prac_num.split())<1:
-#             print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc + ' please try again.')
-#         else:
-#             return pra_num
-#     elif input('You: ').lower() == 'e':
-#         print('Mo: Please enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...')
-#         doc = input('You: ')
-#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(office_email) = :doc"""
-#         if len(prac_num.split())>1:
-#             print('Mo: oooh seems like there are too many doctors who share that email.\nPlease enter a different input for a more accurate output')
-#         elif len(prac_num.split())<1:
-#             print('Mo: Sorry seems like we couldnt find your specific doctor' + doc + ' please try again.')
+    db = firestore.client()
+    print('Mo: The are 4 options:\n You can search your doctor by name, or surname, or name and surname or office email')
+    print('To search your doctor by:\nname enter "n" \nsurname enter "s"\nname and surname enter "c" \noffice email enter "e"')
+    c_input = input('You: ').lower()
+    if c_input == 'n':
+        print('Mo: Please enter the Name of the doctor you want to book. e.g) "John" or "Dumi"...')
+        docInput = input('You: ')
+        docs = db.collection('Doctors').where("Name","==",docInput).get()
+        for doc in docs:
+            prac_num = u'{}'.format(doc.to_dict()['Practice Number'])
+            print(prac_num)
+        if len(prac_num.split())>1:
+            print('Mo: oooh seems like there are too many doctors who share that  Name.\nPlease enter a different input for a more accurate output')
+        elif len(prac_num.split())<1:
+            print('Mo: Sorry seems like we couldnt find your specific doctor ' +  doc +' please try again.')
+        else:
+            return prac_num
+
+    elif c_input == 's':
+            print('Mo: Please enter the Surname of the doctor you want to book. e.g) "van de merwe" or "zwane"...')
+            docInput = input('You: ')
+            docs = db.collection('Doctors').where("Surname","==",docInput).get()
+            for doc in docs:
+                    prac_num = u'{}'.format(doc.to_dict()['Practice Number'])
+                    print(prac_num)
+            if len(prac_num.split())>1:
+                print('Mo: oooh seems like there are too many doctors who share that  Surname.\nPlease enter a different input for a more accurate output')
+            elif len(prac_num.split())<1:
+                print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc  + ' please try again.')
+            else:
+                return prac_num
+
+    elif c_input == 'c':
+        print('Mo: Please enter the Name AND Surname of the doctor you want to book. e.g) "Chris Klopper" or "Frank Mahlangu"...')
+        do = input('You: ')
+        prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN (:doc) AND LOWER(surname) IN (:doc)"""
+        if len(prac_num.split())>1:
+            print('Mo: oooh seems like there are too many doctors who share that Name and Surname.\nPlease enter a different input for a more accurate output')
+        elif len(prac_num.split())<1:
+            print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc + ' please try again.')
+        else:
+            return prac_num
+    elif c_input == 'e':
+        print('Mo: Please enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...')
+        doc = input('You: ')
+        docs = db.collection('Doctors').where("Email","==",docInput).get()
+        for doc in docs:
+            prac_num = u'{}'.format(doc.to_dict()['Practice Number'])
+            print(prac_num)
+        if len(prac_num.split())>1:
+            print('Mo: oooh seems like there are too many doctors who share that email.\nPlease enter a different input for a more accurate output')
+        elif len(prac_num.split())<1:
+            print('Mo: Sorry seems like we couldnt find your specific doctor' + doc + ' please try again.')
                
-#        else:
-#             return pra_num
-#     elif input('You: ').lower() == 'cancel':
-#         print('Mo: canceling process....')
-#         return ''
-#     else: 
-#         print('Mo: Sorry you must have entered an incorrect input please try again or type "cancel" to end the process')
+        else:
+            return prac_num
+    elif c_input == 'cancel':
+        print('Mo: canceling process....')
+        return ''
+    else: 
+        print('Mo: Sorry you must have entered an incorrect input please try again or type "cancel" to end the process')
+    
+
+
     
 # def display_booking():
 #     #this displays a recently build booking thea:
 #     #Patient name, surname, Appointment start and end date and time, doctor name and surname
 # def all_booking():
 #     #This function will take a patients id number and display all booking which are not past today or which have not passed
-# def get_dt_time():
-#     #I THINK the parameters should be the time slot (30) or (1h) time slots so it can be added to get the end_time
-#     #this one gets the date and times from react native, separates the:
-#     #start_date_time (10-11-2022 12:30) and end_date_time (10-11-2022 13:00)
-#     from datetime import datetime # has format yyyy-mm-dd so react must return same format
-#     today = datetime.now().date()
-#     while True:
-    
-#         #Display react CALendar
-#         date = #the date from the calender from the in the format DD/MM/YYYY
-#         if bool(date) == True && date >= today:
-#             #React native displays button for time slots in format 09:30-10:00 or ...
-#             slots = #from react
-#             slots= slots.split('-')
-#             start_time = slots[0]
-#             end_time = slots[1]
-#             return [date,start_time,end_time]
-#         elif bool(date) == False && date < today:
-#             print('Mo: Sorry seems like your your date is invalid either its empty or the date has passed. \nLets try again')
+def get_dt_time():
+    #this one gets the date and times from react native, separates the:
+    #start_date_time (10-11-2022 12:30) and end_date_time (10-11-2022 13:00)
+    from datetime import datetime # has format yyyy-mm-dd so react must return same format
+    today = datetime.now().date()
+    while True:
+        #Display react CALendar
+        # date = #the date from the calender from the in the format DD/MM/YYYY
+        print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!')
+        print('Mo: What date would you like to book for\n Please enter the date in the format: YYYY/MM/DD HH:MM, for example 2022/05/24')
+        date = input('You:')
+        
+        if bool(date) == True: #and date >= today
+            #React native displays button for time slots in format 09:30-10:00 or ...
+            print('Mo: What time slots would you like')
+            slots = input('You: ')
+            #slots = from react
+            slots= slots.split('-')
+            start_time_date= date + ' ' + slots[0]
+            end_time_date = date + ' ' + slots[1]
+            return [start_time_date, end_time_date]
+        else:
+            print('Mo: Sorry seems like your your date is invalid either its empty or the date has passed. \nLets try again')
+     
     
     
 # def doc_working_days():
@@ -262,38 +236,20 @@ def getResponse(ints, intents_json):
        
 ##########################################################################################################################################################################
  ####################Booking Appointments starts here######################################
-            def check_date(user_date):
-                right_date = False
-                try:
-                    datetime.datetime.strptime(user_date, '%Y/%m/%d %H:%M')
-                    right_date = True
-                except ValueError:
-                    print('Mo: Incorrect date format please enter the date in the format: YYYY/MM/DD HH:MM, (e.g 2022/05/24:09:300)')
-                    right_date=False
-                
-                return right_date
-            correctDate = False
-            print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!')
-            print('Mo: What date would you like to book for\n Please enter the date in the format: YYYY/MM/DD HH:MM, for example 2022/05/24:09:30')
-            while correctDate == False:
-                book_date = input('You: ')
-                correctDate = check_date(book_date)
+            #This must possibly be initialised as an array
+            
+            date_time_sot = get_dt_time()
+            d_date= date_time_sot[0].split(' ')
+            d_date= d_date[0]
             # result will me confirmation of booking
-            print('Mo: Do you have a specific doctor you want to see who is in our system or \nWould you like me to display all the doctors available on your specific date ('+book_date+')')
+            print('Mo: Do you have a specific doctor you want to see who is in our system or \nWould you like me to display all the doctors available on your specific date (' + d_date + ')')
             choice = False
             while choice==False:
                 print('Mo: If you have a specific doctor please type "s" \nand if you would like to pick from available doctor on the day please type "d"')
                 doctor_name=input('You: ')
                 if doctor_name.lower() =='s' or doctor_name.lower() =='specific':
-                    #prac_num == validate_doc()
+                    prac_num = find_doc()
                     #status = doc_status(prac_num)
-                    #if status.lower()='working:
-                    #   build_booking(prac_num)
-                    #THEN WE NEED TO TAKE A CONFIRMATION FROM THE USER(Y/N)then we either store booking or clients start convistion from scatch if n
-                    #   break
-                    #elif status.lower()=='leave' or bool(status.lower()) ==False:
-                    #   print('Mo: Sorry seems like your doctor is not working on that day please pick another doctor or select any other available practisioner on the day.')
-                    #    break
                     choice=True
                     break
                 elif doctor_name.lower() =='d':
