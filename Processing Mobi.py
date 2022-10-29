@@ -136,68 +136,116 @@ def predict_class(sentence, model):
         return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
     return return_list
 
-# def validate_doc():
-#     #this takes the users input of the doctors name or surname or name and surname
-#     print('Mo: Please enter the surname of the doctor you want to book. e.g) "van der merwe" or "zulu"...')
-#     doc_input = input('You: ')
-#     sql= """ SELECT practice_num FROM doctors WHERE LOWER(surname) = :surname"""
-#     mycursor.execute(sql, {'surname': doc_input})
-#     pra_num = mycursor.fetchall()
-#     #This loop checks if more than one practice number was returned if so exception hande
-#     if len(pra_num.split())>1:
-#         print('Mo: oooh seems like the is too many doctors who share that surname.\nPlease enter the name AND surname of the doctor for a more accurate response. \n If you dont know the following information please type "n" for next.')
-#         doc_input = input('You: ')
-#         if doc_input =='n' or doc_input == 'N':
-#             print('Mo: please enter the doctors office email address to help my find your specific doctor.)
-#             doc_input = input('You: ')
-#             sql ="""SELEC practice_num FROM doctors WHERE LOWER(office_email = :email"""
-#             mycursor.execute(sql, {'email': doc_input})
-#             pra_num = mycursor.fetchall()
-#             if len(pra_num.split())>1 or len(pra_num.split())<1:
-#                 print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
-#                 print('Mo: ' + chatbot_response(input('You: ') ))
+
+# def doc_status(number):
+#     #This gets the doctors practice number and returns hes status whether:
+#     #he/she is "working" or on "leave" or not in that day
+#     doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
+#     return doc_stat
+    
+# def available_docs():
+#     #This takes on the start_date_time and end_date_time and displays all doctors who
+#     #are available on that day and displays all doctors available on that day 
+# def find_doc():
+#     #This function searchs for a specific doctor through, either by surname or name or name and surname or office email
+#     # then returns the doctors practice number when found for further use in booking
+#     print('Mo: The are 4 options:\n You can search your doctor by name, or surname, or name and surname or office email')
+#     print('To search your doctor by:\n name enter "n" \n surname enter "s"\n name and surname enter "c" office email enter "e"')
+#     if input('You: ').lower() == 'n':
+#         print('Mo: Please enter the Name of the doctor you want to book. e.g) "John" or "Dumi"...')
+#         doc = input('You: ')
+#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(name) = :doc"""
+#         if len(prac_num.split())>1:
+#             print('Mo: oooh seems like there are too many doctors who share that  Name.\nPlease enter a different input for a more accurate output')
+#         elif len(prac_num.split())<1:
+#             print('Mo: Sorry seems like we couldnt find your specific doctor ' +  doc +' please try again.')
+#         else:
+#             return pra_num
+#     elif input('You: ').lower() == 's':
+#         print('Mo: Please enter the Surname of the doctor you want to book. e.g) "van de merwe" or "zwane"...')
+#         doc = input('You: ')
+#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(surname) = :doc"""
+#         if len(prac_num.split())>1:
+#             print('Mo: oooh seems like there are too many doctors who share that  Surname.\nPlease enter a different input for a more accurate output')
+#         elif len(prac_num.split())<1:
+#             print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc  + ' please try again.')
+#         else:
+#             return pra_num
+#     elif input('You: ').lower() == 'c':
+#         print('Mo: Please enter the Name AND Surname of the doctor you want to book. e.g) "Chris Klopper" or "Frank Mahlangu"...')
+#         do = input('You: ')
+#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN (:doc) AND LOWER(surname) IN (:doc)"""
+#         if len(prac_num.split())>1:
+#             print('Mo: oooh seems like there are too many doctors who share that Name and Surname.\nPlease enter a different input for a more accurate output')
+#         elif len(prac_num.split())<1:
+#             print('Mo: Sorry seems like we couldnt find your specific doctor ' + doc + ' please try again.')
+#         else:
+#             return pra_num
+#     elif input('You: ').lower() == 'e':
+#         print('Mo: Please enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...')
+#         doc = input('You: ')
+#         prac_num= """ SELECT practice_num FROM doctors WHERE LOWER(office_email) = :doc"""
+#         if len(prac_num.split())>1:
+#             print('Mo: oooh seems like there are too many doctors who share that email.\nPlease enter a different input for a more accurate output')
+#         elif len(prac_num.split())<1:
+#             print('Mo: Sorry seems like we couldnt find your specific doctor' + doc + ' please try again.')
+               
+#        else:
+#             return pra_num
+#     elif input('You: ').lower() == 'cancel':
+#         print('Mo: canceling process....')
+#         return ''
+#     else: 
+#         print('Mo: Sorry you must have entered an incorrect input please try again or type "cancel" to end the process')
+    
+# def display_booking():
+#     #this displays a recently build booking thea:
+#     #Patient name, surname, Appointment start and end date and time, doctor name and surname
+# def all_booking():
+#     #This function will take a patients id number and display all booking which are not past today or which have not passed
+# def get_dt_time():
+#     #I THINK the parameters should be the time slot (30) or (1h) time slots so it can be added to get the end_time
+#     #this one gets the date and times from react native, separates the:
+#     #start_date_time (10-11-2022 12:30) and end_date_time (10-11-2022 13:00)
+#     from datetime import datetime # has format yyyy-mm-dd so react must return same format
+#     today = datetime.now().date()
+#     while True:
+    
+#         #Display react CALendar
+#         date = #the date from the calender from the in the format DD/MM/YYYY
+#         if bool(date) == True && date >= today:
+#             #React native displays button for time slots in format 09:30-10:00 or ...
+#             slots = #from react
+#             slots= slots.split('-')
+#             start_time = slots[0]
+#             end_time = slots[1]
+#             return [date,start_time,end_time]
+#         elif bool(date) == False && date < today:
+#             print('Mo: Sorry seems like your your date is invalid either its empty or the date has passed. \nLets try again')
+    
+    
+# def doc_working_days():
+#     #This function is for displaying a doctors days which he is availableand the timeslots
+# def Booking():
+#     #This function is for the booking intent
+#     print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!
+#     print('Mo: Please pick a date and the time slot youd like to book for.')
+#     #Get dates and times from react natives
+#     booking = get_dt_time()
+#     #Get a doctor
+#     while True:
+#         print('Mo: Do you have a specific doctor you want to see who is in our system or \nWould you like me to display all the doctors available on your specific date(' + booking[0] + ' ' + booking[1] + '-' + booking[2] ')')
+#         print('Mo: If you have a specific doctor please type "s" \nand if you would like to pick from available doctor on the day please type "d"')
+#         if input('You: ').lower() =='s':
+#             prac_num = find_doc()
+#             if bool(prac_num) == False:
 #                 break
 #             else:
-#                 return pra_num
-#         else:
-#             doc_input = doc_input.split()
-#             sql= """ SELECT practice_num FROM doctors WHERE LOWER(name) IN :surname AND LOWER(surname) IN :surname"""
-#             mycursor.execute(sql, {'surname': doc_input})
-#             pra_num = mycursor.fetchall()
-#                 if len(pra_num.split())>1 or len(pra_num.split())<1:
-#                     print('Mo: Seems like i can not find the specific doctor in our system, I do apologies. \n Is there anything else i can help you with')
-#                     print('Mo: ' + chatbot_response(input('You: ') ))
-#                     break
-#                 else:
-#                     return pra_num
-#                     break            
-#     elif len(pra_num.split())<1:
-#         print('Mo: Sorry seems like we dont have such a doctor in our system. \n Is there anything else i can help you with.')
-#         print('Mo: ' + chatbot_response(input('You: ') ))
-#         break
-#         #find option out
-#     else:
-#         return pra_num
-#         break
-
-# def avail_docs(date): 
-#     date = date.split()
-#     day = date[0]
-#     time = date[1]
-#     sql= """ SELECT  name, surname, specialization, DISTINCT office_phone, DISTINCT office_email FROM doctors, operational_days WHERE operation_type ='working' AND :time BETWEEN start_time AND end_time AND :day BETWEEN start_date AND end_date AND doctor_id = practice_num"""
-#     doctors = mycursor.execute(sql, {'date': date, 'time': time})
-#     return doctors
-        
-# def doc_status(practice_num):
-#     sql= """ SELECT operation_type FROM operational_days WHERE doctor_id = :num"""
-#     mycursor.execute(sql, {'num': practice_num})
-#     doc_status = mycursor.fetchall()
-#     return doc_status
-
-# def build_booking(doctor_num):
-#     select p.name, p.surname, booking_id, d.surname, start_date, end_date, reason
-#     from patients p,appointments a, doctors d
-#     where doctor_num = 
+#                 doc_status(prac_num)
+# def Cancel_Booking():
+#     #This function is for the canceling intent
+# def Reschedule():
+#     #This function is for the rescheduling intent
 
 def getResponse(ints, intents_json):
     #this is the function whos if statement must be modified for scheduling and rescheduling and booking and medical inquries
@@ -208,7 +256,7 @@ def getResponse(ints, intents_json):
     for i in list_of_intents:
         #Now we can add functions in the if statements that will take from the next user input
         if(i['tag']== 'booking' and i['tag']== tag):
-            #needs calender and after will take user input through a function
+            #needs calender and after will take user in3/put through a function
             #Must check if date is not before today, if doctor will be availble and if time is fine
      
        
@@ -231,7 +279,7 @@ def getResponse(ints, intents_json):
                 book_date = input('You: ')
                 correctDate = check_date(book_date)
             # result will me confirmation of booking
-            print('Mo: Do you have a specific doctor you want to see whos in our system or \nWould you like me to display all the doctors available on your specific date ('+book_date+')')
+            print('Mo: Do you have a specific doctor you want to see who is in our system or \nWould you like me to display all the doctors available on your specific date ('+book_date+')')
             choice = False
             while choice==False:
                 print('Mo: If you have a specific doctor please type "s" \nand if you would like to pick from available doctor on the day please type "d"')

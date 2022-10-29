@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "expo-cli": "^6.0.6",
     "react-native": "^0.70.3",
     "react-native-calendars": "^1.1289.0"
   }
