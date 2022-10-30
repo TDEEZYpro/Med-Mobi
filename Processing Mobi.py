@@ -5,7 +5,7 @@ from platform import python_branch
 from sqlite3 import DatabaseError
 from tabnanny import check
 from tokenize import Name
-import nltk
+import nltk 
 from nltk.stem import WordNetLemmatizer
 lemmatizer = WordNetLemmatizer()
 import pickle
@@ -91,9 +91,30 @@ def predict_class(sentence, model):
     # else:
     #     return doc_stat
     
-# def available_docs():
+# #def available_docs(cStart_dt_time, cEnd_dt_time):
 #     #This takes on the start_date_time and end_date_time and displays all doctors who
 #     #are available on that day and displays all doctors available on that day 
+#         #These would be the clints start and end time and date split to date, start time and end time 
+#         cStart_dt_time =cStart_dt_time.split(' ')
+#         cEnd_dt_time = cEnd_dt_time.split(' ')
+#         app_date = cStart_dt_time[0]
+#         app_start_tm =cStart_dt_time[1]
+#         app_end_tm =cEnd_dt_time[1]
+#     #We need the database to fetch all the doctors whos dates and times fit the discription 
+#     #I think databe of operational_days should be, doc_id, start_date, start_time,end_date, end_time
+#     db.collection('Operational_days').where("start_date","<=",docInput, "<=", end_date) AND .where("start_date","<=",docInput, "<=", end_date)
+#     #or alternitively we could have a python loop that checks every entry in the operational_days if the date and time are between the time frame and time slot and the doctor is working so therefore we can fetch the doctors details for display purpose(whether he is available or not
+#     # which the code would  be
+#     #for loop till the end of enteries in the operational_day table
+#      date1 = start_date
+#      date2 = end_date
+#      time1 = start_time
+#      time2 = end_time
+#      if (date1 <= app_date<=date2):
+#         if time1 <= app_start_tm and time2 >= app_end_tm:
+#         #take the doctors practice number to check if hes not book already for that slot
+         
+    
 
 
 
