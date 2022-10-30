@@ -74,45 +74,48 @@ def predict_class(sentence, model):
     return return_list
 
 
-# def doc_status(number):
-#     #This gets the doctors practice number and returns hes status whether:
-#     #he/she is "working" or on "leave" or not in that day
+def doc_status(number,start_dt_time ,end_dt_time):
+#     #this takes the doc practice number and the requested start time and end time dte of the user and compare if doctor is working on the day and if yes
+    ##thee it goes to the appointment database and checks if he is not already book for that specific time slot if not it books the client boi
+    ##if no he has an appointment at that day and time slot then ill say hes booked and display the date and time when the doctor is available on that day the the user picks another time slot
 
-    #doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
+
+#     doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
     
-    # doc_compr = db.collection('Operational_Days').where('Doctor_ID',"==",number)
-    # for doc in doc_compr:
-    #     doc_stat = u'{}'.format(doc.to_dict()['Operational_type'])
+#     doc_compr = db.collection('Operational_Days').where('Doctor_ID',"==",number)
+#     for doc in doc_compr:
+#         doc_stat = u'{}'.format(doc.to_dict()['Operational_type'])
     
-    # if bool(doc_stat) ==True:
-    #     print('Mo: Sorry your doctor is not working on that specific day')
-    # elif doc_stat.lower() == 'leave':
-    #      print('Mo: Sorry your doctor is not working on that specific day')
-    # else:
-    #     return doc_stat
+#     if bool(doc_stat) ==True:
+#         print('Mo: Sorry your doctor is not working on that specific day')
+                
+#     elif doc_stat.lower() == 'leave':
+#          print('Mo: Sorry your doctor is not working on that specific day')
+#     else:
+#         return doc_stat
     
-# #def available_docs(cStart_dt_time, cEnd_dt_time):
+# def available_docs(cStart_dt_time, cEnd_dt_time):
 #     #This takes on the start_date_time and end_date_time and displays all doctors who
 #     #are available on that day and displays all doctors available on that day 
-#         #These would be the clints start and end time and date split to date, start time and end time 
-#         cStart_dt_time =cStart_dt_time.split(' ')
-#         cEnd_dt_time = cEnd_dt_time.split(' ')
-#         app_date = cStart_dt_time[0]
-#         app_start_tm =cStart_dt_time[1]
-#         app_end_tm =cEnd_dt_time[1]
+#     #These would be the clints start and end time and date split to date, start time and end time 
+#     cStart_dt_time =cStart_dt_time.split(' ')
+#     cEnd_dt_time = cEnd_dt_time.split(' ')
+#     app_date = cStart_dt_time[0]
+#     app_start_tm =cStart_dt_time[1]
+#     app_end_tm =cEnd_dt_time[1]
 #     #We need the database to fetch all the doctors whos dates and times fit the discription 
 #     #I think databe of operational_days should be, doc_id, start_date, start_time,end_date, end_time
-#     db.collection('Operational_days').where("start_date","<=",docInput, "<=", end_date) AND .where("start_date","<=",docInput, "<=", end_date)
+#     db.collection('Operational_days').where("start_date","<=",app_date, "<=", "end_date") AND .where(sart)
 #     #or alternitively we could have a python loop that checks every entry in the operational_days if the date and time are between the time frame and time slot and the doctor is working so therefore we can fetch the doctors details for display purpose(whether he is available or not
 #     # which the code would  be
 #     #for loop till the end of enteries in the operational_day table
-#      date1 = start_date
-#      date2 = end_date
-#      time1 = start_time
-#      time2 = end_time
-#      if (date1 <= app_date<=date2):
+#     date1 = start_date
+#     date2 = end_date
+#     time1 = start_time
+#     time2 = end_time
+#     if (date1 <= app_date<=date2):
 #         if time1 <= app_start_tm and time2 >= app_end_tm:
-#         #take the doctors practice number to check if hes not book already for that slot
+#          #take the doctors practice number to check if hes not book already for that slot
          
     
 
@@ -197,15 +200,13 @@ def get_dt_time():
     #this one gets the date and times from react native, separates the:
     #start_date_time (10-11-2022 12:30) and end_date_time (10-11-2022 13:00)
     from datetime import datetime # has format yyyy-mm-dd so react must return same format
-    today = datetime.now().date()
+    today = datetime.now().date().strftime("%y-%m-%d")
+    print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!')
     while True:
+        print('Mo: What date would you like to book for\n Please enter the date in the format: YYYY-MM-DD HH:MM, for example 2022-05-24')
         #Display react CALendar
-        # date = #the date from the calender from the in the format DD/MM/YYYY
-        print('Mo: Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!')
-        print('Mo: What date would you like to book for\n Please enter the date in the format: YYYY/MM/DD HH:MM, for example 2022/05/24')
-        date = input('You:')
-        
-        if bool(date) == True: #and date >= today
+        date = input('You:')          
+        if bool(date) == True and date >= today:
             #React native displays button for time slots in format 09:30-10:00 or ...
             print('Mo: What time slots would you like')
             slots = input('You: ')
