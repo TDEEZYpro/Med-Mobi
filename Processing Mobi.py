@@ -74,16 +74,12 @@ def predict_class(sentence, model):
     return return_list
 
 
-# def doc_status(number):
+# def doc_status(Prac_Number, start_dt_tm, end_dt_tm ):
 #     #This gets the doctors practice number and returns hes status whether:
 #     #he/she is "working" or on "leave" or not in that day
+    #The prac_ number goes to Operational_days database and then fetch all the doctors files when working 
+    
 
-    #doc_stat = """ SELECT operation_type FROM operational_days WHERE doctor_id = :number"""
-    
-    # doc_compr = db.collection('Operational_Days').where('Doctor_ID',"==",number)
-    # for doc in doc_compr:
-    #     doc_stat = u'{}'.format(doc.to_dict()['Operational_type'])
-    
     # if bool(doc_stat) ==True:
     #     print('Mo: Sorry your doctor is not working on that specific day')
     # elif doc_stat.lower() == 'leave':
