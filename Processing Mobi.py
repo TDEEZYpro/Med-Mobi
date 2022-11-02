@@ -186,7 +186,6 @@ def find_doc():
                 else:
                     return prac_num
 
-
         elif c_input == 'c':
             print('Mo: Please enter the Initials AND Surname of the doctor you want to book. e.g) "Chris Klopper" or "Frank Mahlangu"...')
             docInput = docInput = tags(mo)
