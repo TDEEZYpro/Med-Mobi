@@ -135,7 +135,6 @@ def available_docs(Start_dt_time, End_dt_time):
         #all avaiable/working
         #must not have an appointment on the timeslot the user wants to book for
         #must be woking akeer but must have 
-
         print('Mo: Please enter an offfice email for the specific doctor you see and like to choose')
         input()
         return practice_num
