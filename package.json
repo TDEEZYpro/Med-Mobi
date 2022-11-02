@@ -1,7 +1,9 @@
 {
   "dependencies": {
     "expo-cli": "^6.0.6",
+    "flask": "^0.2.10",
     "react-native": "^0.70.3",
-    "react-native-calendars": "^1.1289.0"
+    "react-native-calendars": "^1.1289.0",
+    "snapshot": "^0.0.0"
   }
 }
