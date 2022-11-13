@@ -47,6 +47,14 @@ db = firestore.client()
 db.collection('Meessage').document('111111').update({'Message':""})
 db.collection('Meessage').document('123457').update({'Message':""})
 
+loggedIn = db.collection('LoggedIn').document('123456789').get()
+client_Email = u'{}'.format(loggedIn.to_dict()['user'])
+log_ID = db.collecion('Patients').where('Email','==',client_Email)
+client_ID = u'{}'.format(loggedIn.to_dict()['ID Number'])
+
+
+
+
 def clean_up_sentence(sentence):
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
@@ -276,20 +284,23 @@ def display_booking(client_Id, intent):
     today = datetime.now().date().strftime("%y-%m-%d HH:mm" )
     yesterday = date.today() - timedelta(days=1)
     yesterday.strftime("%y-%m-%d HH:mm")
-    Appointments = []
+    Appointments = [[]]
 
     if intent.lower() == 'reschedule':
         print('jelo')
     elif intent.lower() == 'cancel':
         #fetched all user appointments and displays them all and prompt the user to enter the booking id of the appointment he wants to cancel
-        Appointments  = #Populate with all user appointments where 
-        for app in Appointments:
+        appoint = db.collection('Appointments').collection('Booking_ID').where('Patient_ID','==',client_Id).get()
+        for doc in appoint:
+            Appointments  = u'{}'.format(app.to_dict()['Booking_ID'])
             #since its going to be a 2d array i think we need two loops 
-            
-            mo = str(Appointments[app])
+            mo = str(Appointments[doc])
+            db.collection('Meessage').document('111111').update({'Message':mo})
             #update datebase to display bokking details
+            
         if len(Appointments) == 0:
              mo =' Sorry seems like you dont have any booking still up for show, this means your appointment has already passed due date and now you can just simply book a new appointment with me to do that just enter "Book" or "Book appointment"'
+             db.collection('Meessage').document('111111').update({'Message': mo})
              return
         elif len(Appointments) == 1:
             mo = 'Looks like you only have one booking available for cancelation. Please enter "yes" to cancel/delete the booking or "no" to stop this process'
@@ -297,9 +308,11 @@ def display_booking(client_Id, intent):
             while True:
                 if input== 'yes' or input == 'continue' or input == 'y':
                     mo = 'Booking canceled. If the is anything else i can help you please type away remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    db.collection('Meessage').document('111111').update({'Message': mo})
                     return
                 elif input== 'no' or input == 'cancel' or input == 'stop' or input == 'n':
                     mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    db.collection('Meessage').document('111111').update({'Message': mo})
                     return
                 else: 
                     mo = 'Invalid input please try again, \n\tYes or No'
@@ -313,9 +326,11 @@ def display_booking(client_Id, intent):
             while True:
                 if input== 'yes' or input == 'continue' or input == 'y':
                     mo = ' Booking canceled. If the is anything else i can help you please type away remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    db.collection('Meessage').document('111111').update({'Message': mo})
                     return
                 elif input== 'no' or input == 'cancel' or input == 'stop' or input == 'n':
                     mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    db.collection('Meessage').document('111111').update({'Message': mo})
                     return
                 else: 
                     mo = 'Invalid input please try again, \n\tYes or No'
@@ -379,11 +394,15 @@ def Booking():
             resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
             dec = tags(resp)
     #After this loop it should display the booking cause it has client id, doctor id, start&end date and time  maybe we could add something for adding a reason for booking
-    pName = #Fetch patient name from the database usin patient id
-    pSurname = #Fetch patient surname from the database usin patient id
-    pDoctorI = #Fetch Doctors name from the database using doctor practice number
-    pDoctorS = #Fetch Doctors surname from the database using doctor practice number
-    pDoctorSp = #Fetch Doctors specialization from the database using doctor practice number
+    client_ID
+    user = db.collection('Patients').where({'ID Number','==',client_ID})
+    prac_num
+    Dr = db.collection('Doctors').where({'Practice Number','==',prac_num})
+    pName = u'{}'.format(user.to_dict()['Name'])
+    pSurname = u'{}'.format(user.to_dict()['Surname'])
+    pDoctorI = u'{}'.format(Dr.to_dict()['Initials'])
+    pDoctorS = u'{}'.format(Dr.to_dict()['Surname'])
+    pDoctorSp = u'{}'.format(Dr.to_dict()['Specialization'])
 
     resp = 'Please confrirm your booking to me.\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nPlease enter "Yes" to accept this booking or "No" to cancel booking process'
     confrim_appnt = tags(resp)
@@ -403,10 +422,11 @@ def Cancel_Booking():
     input =  tags(mo).lower()
     while True:
         if input== 'yes' or input == 'continue' or input == 'y':
-            display_booking(patient_id, 'cancel' )
+            display_booking(client_ID, 'cancel' )
 
         elif input== 'no' or input == 'cancel' or input == 'n':
             mo = ' You have termanated the process of canceling an appointment, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+            db.collection('Meessage').document('111111').update({'Message': mo})
             return
         else: 
             mo = 'Invalid input please try again, \n\tYes or No'
