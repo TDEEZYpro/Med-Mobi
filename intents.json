@@ -12,7 +12,7 @@
         {
             "tag": "name",
             "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "what is this", "Who is this"],
-            "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, but my friends call me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
+            "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel an reschedule you appointments with any doctor in our database and give you some infotmation about todays disease, but my friends just call me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
         },
         {
             "tag": "noanswer",
@@ -22,7 +22,7 @@
         {
             "tag": "options",
             "patterns": ["What do you do", "How can you help", "what do you do", "What is your purpose", "What do you know", "Whats your job", "How do you work"],
-            "responses": ["I can book you an appointment with any available doctor nearby or prefered doctor in our system"]
+            "responses": ["I can: \n\t1. Book you an appointment with any available doctor or prefered doctor in our system. \n\t2. I cancel appointments. \n\t3. I can reschedule appointments. \n\tDisplay all upcoming bookings. \n\t5. I can tell you information about disease and viruse and their common causes treatment and definition."]
         },
         {
             "tag": "thanks",
@@ -46,7 +46,7 @@
         },
         {
             "tag": "checking",
-            "patterns": ["when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
+            "patterns": ["display", "show me my appointment", "show", "i want to see my appointment", "display appointments", "show appointments", "when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
             "responses": []
         },
         {
@@ -57,7 +57,7 @@
         {
             "tag": "appointment",
             "patterns": ["appointment", "booking", "appoint", "session", "consultation", "arrangement"],
-            "responses": ["if you want to book or cancel or reschedule an appointment please be descriptive \n(e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want torescheduleappointment')", "Please be more descriptive, do you want to 'cancel appointment' or 'book appointment' or 'reschedule appointment'"]
+            "responses": ["if you want to book, caance, reshcedule, or even display an appointment please be descriptive \n(e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want to reschedule appointment' or 'i want to see my appointments)", "Please be more descriptive, do you want to 'cancel appointment' or 'book appointment' or 'reschedule appointment' or 'display/show appointments'"]
         }
     ]
 }
