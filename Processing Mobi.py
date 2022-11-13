@@ -274,8 +274,58 @@ def display_booking(client_Id, intent):
     #THE CLIENT ID IS FROM THE LOG IN PAGE imporrt from database
     from datetime import datetime, date, timedelta
     today = datetime.now().date().strftime("%y-%m-%d HH:mm" )
-    # yesterday = date.today() - timedelta(days=1)
-    # yesterday.strftime("%y-%m-%d HH:mm")
+    yesterday = date.today() - timedelta(days=1)
+    yesterday.strftime("%y-%m-%d HH:mm")
+    Appointments = []
+
+    if intent.lower() == 'reschedule':
+        print('jelo')
+    elif intent.lower() == 'cancel':
+        #fetched all user appointments and displays them all and prompt the user to enter the booking id of the appointment he wants to cancel
+        Appointments  = #Populate with all user appointments where 
+        for app in Appointments:
+            #since its going to be a 2d array i think we need two loops 
+            
+            mo = str(Appointments[app])
+            #update datebase to display bokking details
+        if len(Appointments) == 0:
+             mo =' Sorry seems like you dont have any booking still up for show, this means your appointment has already passed due date and now you can just simply book a new appointment with me to do that just enter "Book" or "Book appointment"'
+             return
+        elif len(Appointments) == 1:
+            mo = 'Looks like you only have one booking available for cancelation. Please enter "yes" to cancel/delete the booking or "no" to stop this process'
+            input =  tags(mo).lower()
+            while True:
+                if input== 'yes' or input == 'continue' or input == 'y':
+                    mo = 'Booking canceled. If the is anything else i can help you please type away remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    return
+                elif input== 'no' or input == 'cancel' or input == 'stop' or input == 'n':
+                    mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    return
+                else: 
+                    mo = 'Invalid input please try again, \n\tYes or No'
+                    input =  tags(mo).lower()
+        elif len(Appointments) > 1:
+            mo =' Pleasse pick the booking you want to cancel then enter the booking number of that booking: '
+            answer = tags(mo)
+            #Database fetches the bookings details displays the details
+            mo = ' Please enter "yes" to cancel/delete the booking or "no" to stop this process'
+            input =  tags(mo).lower()
+            while True:
+                if input== 'yes' or input == 'continue' or input == 'y':
+                    mo = ' Booking canceled. If the is anything else i can help you please type away remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    return
+                elif input== 'no' or input == 'cancel' or input == 'stop' or input == 'n':
+                    mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+                    return
+                else: 
+                    mo = 'Invalid input please try again, \n\tYes or No'
+                    input =  tags(mo).lower()
+                
+
+    elif intent.lower() == 'display':
+        print('jelo')
+
+
 
     #Now you have to select all the users appointments WHERE the appointment start_dt_time >= today From database
     #then well display booking
@@ -299,14 +349,6 @@ def Booking():
     user_input= ''
     date = tags(resp) 
     print(date)  
-    # date_time_slot = get_dt_time()
-    #this now will be the user booking start time and end time dates separated
-    # strt_dt_time = date_time_slot[0]
-    # end_dt_time = date_time_slot[1]
-
-    #getting the doctor now and his practice number
-    # print(strt_dt_time)
-    # print(end_dt_time)
     ################################################TimeSlots######################################
     resp =' What time slots would you like?'
     bot_respon = db.collection(u'Meessage').document('111111').update({'Message' : resp})
@@ -337,21 +379,40 @@ def Booking():
             resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
             dec = tags(resp)
     #After this loop it should display the booking cause it has client id, doctor id, start&end date and time  maybe we could add something for adding a reason for booking
+    pName = #Fetch patient name from the database usin patient id
+    pSurname = #Fetch patient surname from the database usin patient id
+    pDoctorI = #Fetch Doctors name from the database using doctor practice number
+    pDoctorS = #Fetch Doctors surname from the database using doctor practice number
+    pDoctorSp = #Fetch Doctors specialization from the database using doctor practice number
 
+    resp = 'Please confrirm your booking to me.\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nPlease enter "Yes" to accept this booking or "No" to cancel booking process'
+    confrim_appnt = tags(resp)
+    #Database add a booking into the database,Doctor_ID = prac_num, End_date = end_dt_tm, Start_date = start_dt_tm, patient_ID = client_ID
+    booking_id = #Fetch the booking id created from the appointment created above using the client Id
+    resp = 'You have the following appointment:'+ '\n\tBooking Number: '+ str(booking_id)+'\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nSee you then ): '
+    #break out of the function
+    return
     #DATABASE UPDATES APPPOINTMENTS DATABASE
 def Cancel_Booking():
 #   #This function is for the canceling intent
     db = firestore.client()
+    from datetime import datetime, date, timedelta
+    yesterday = date.today() - timedelta(days=1)
+    yesterday.strftime("%y-%m-%d")
+    mo = ' You trying to cancel an appointment, To allow me to show you all recent appointments that you can cancel please enter "Yes" continue or "No" to cancel the process'
+    input =  tags(mo).lower()
+    while True:
+        if input== 'yes' or input == 'continue' or input == 'y':
+            display_booking(patient_id, 'cancel' )
 
-    mo = ' You trying to cancel an appointment, please allow me to check if you have any recent bookings and i will display them for you please enter yes or no to continue'
-    
-    bot_respon = db.collection(u'Meessage').document('111111').update({'Message' : mo})
-    #get reponse from user
-    user_input= ''
+        elif input== 'no' or input == 'cancel' or input == 'n':
+            mo = ' You have termanated the process of canceling an appointment, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+            return
+        else: 
+            mo = 'Invalid input please try again, \n\tYes or No'
+            input =  tags(mo).lower()
+                
 
-    while user_input == user_input or user_input == '':
-        bot_respon =  db.collection('Meessage').document('123457').get()
-        user_input= u'{}'.format(bot_respon.to_dict()['Message']) 
 
     # answer = user_input.lower()
     # mo = 'It works'
