@@ -57,7 +57,7 @@
         {
             "tag": "appointment",
             "patterns": ["appointment", "booking", "appoint", "session", "consultation", "arrangement"],
-            "responses": ["if you want to book, caance, reshcedule, or even display an appointment please be descriptive \n(e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want to reschedule appointment' or 'i want to see my appointments)", "Please be more descriptive, do you want to 'cancel appointment' or 'book appointment' or 'reschedule appointment' or 'display/show appointments'"]
+            "responses": [" If you want to book, cancel, reshcedule, or even display an appointment please be descriptive \n(e.g) \n\t'I want to book an appointment' or \n\t'I want to cancel appointment' or '\n\tI want to reschedule appointment' or \n\t'I want to see my appointments...", "Please be more descriptive, do you want to: \n\t'cancel appointment' or \n\t'book appointment' or '\n\treschedule appointment' or \n\t'display/show appointments'"]
         }
     ]
 }
