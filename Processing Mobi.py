@@ -18,6 +18,7 @@ import os
 os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 import numpy as np
 import datetime
+import random
 
 from keras.models import load_model
 model = load_model('chatbot_model.h5')
@@ -406,11 +407,33 @@ def Booking():
 
     resp = 'Please confrirm your booking to me.\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nPlease enter "Yes" to accept this booking or "No" to cancel booking process'
     confrim_appnt = tags(resp)
-    #Database add a booking into the database,Doctor_ID = prac_num, End_date = end_dt_tm, Start_date = start_dt_tm, patient_ID = client_ID
-    booking_id = #Fetch the booking id created from the appointment created above using the client Id
-    resp = 'You have the following appointment:'+ '\n\tBooking Number: '+ str(booking_id)+'\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nSee you then ): '
-    #break out of the function
-    return
+    while True:
+        if input== 'yes' or input == 'continue' or input == 'y':
+            random_id = ''.join([str(random.randint(0, 999)).zfill(3) for _ in range(2)])
+
+             #Database add a booking into the database,Doctor_ID = prac_num, End_date = end_dt_tm, Start_date = start_dt_tm, patient_ID = client_ID
+            sub = pSurname[0:3]
+            booking_id = sub + random_id  #Fetch the booking id created from the appointment created above using the client Id
+            # #add user to db
+            user_doc_ref = db.collection(u'Appointments').collection('Booking_ID').document(booking_id)
+            user_doc_ref.set({
+                u'Booking_ID' : booking_id,
+                u'Doctor_Pract_Number': prac_num,
+                u'Patient_ID': client_ID, 
+                u'Start_date': start_dt_tm,
+                u'End_date' : end_dt_tm,
+                })
+            resp = 'You have the following appointment:'+ '\n\tBooking Number: '+ str(booking_id)+'\n\t Patient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t Doctor: DR'+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\tDoctor Specialization: ' + str(pDoctorSp) + '\n\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nSee you then ): '
+            #break out of the function
+            return
+        elif input== 'no' or input == 'cancel' or input == 'stop' or input == 'n':
+            mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+            db.collection('Meessage').document('111111').update({'Message': mo})
+            return
+        else: 
+            mo = 'Invalid input please try again, \n\tYes or No'
+            input =  tags(mo).lower()
+   
     #DATABASE UPDATES APPPOINTMENTS DATABASE
 def Cancel_Booking():
 #   #This function is for the canceling intent
