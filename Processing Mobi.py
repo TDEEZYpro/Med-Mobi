@@ -93,7 +93,7 @@ def predict_class(sentence, model):
 
 def doc_status(number,start_dt_time ,end_dt_time):
     #this takes the doc practice number and the requested start time and end time dte of the user and compare if doctor is working on the day and if yes
-    ##thee it goes to the appointment database and checks if he is not already book for that specific time slot if not it books the client boi
+    ##theen it goes to the appointment database and checks if he is not already book for that specific time slot if not it books the client boi
     ##if no he has an appointment at that day and time slot then ill say hes booked and display the date and time when the doctor is available on that day the the user picks another time slot
     print('check doc status')
     db = firestore.client()
@@ -112,63 +112,36 @@ def doc_status(number,start_dt_time ,end_dt_time):
                 db_ap_date = u'{}'.format(doc.to_dict()['Start_date'])
                 db_ap_date2 = u'{}'.format(doc.to_dict()['End_date'])
             if start_dt_time==db_ap_date and end_dt_time==db_ap_date2:
-                mo = 'Mo: Your doctore is booked for the same time slot you want.\nWould you like to see all the time slots hes available on in this day'
+                mo = ' Your doctor is booked for the same time slot you want.\nWould you like to see all the time slots this doctor is available on for this day (' + str(date) + ') then enter "Yes". \nIf you would like to change and book for a different date and time slot then enter "change" or enter "No" to stop or cancel this whole process...'
                 y_or_n = tags(mo)
-                if y_or_n.lower() =='yes' or y_or_n.lower() =='y':
-                    mo = 'Please select a time slot.'
-                    #react native avaible slots
-                    slot = tags(mo)
-                    slots= slots.split('-')
-                    start_time_date= date + ' ' + slots[0]
-                    end_time_date = date + ' ' + slots[1]
-                    return [start_time_date, end_time_date]
-                elif y_or_n.lower() =='no' or y_or_n.lower() =='n':
-                    #take them
-                    print('Mo: Look like you wouldnt like an appointment on this day....\nLets start over')
-                    print('Mo: Hey! I am mobi how can i help you')
-                else:
-                    print('Mo: Look like you wouldnt like an appointment on this day....\nLets start over')
-                    print('Mo: Hey! I am mobi how can i help you')
+                while True:
+                    if y_or_n.lower() =='yes' or y_or_n.lower() =='y':
+                        mo = ' Please select a time slot.'
+                        #react native avaible slots
+                        slot = tags(mo)
+                        slots= slots.split('-')
+                        start_time_date= date + ' ' + slots[0]
+                        end_time_date = date + ' ' + slots[1]
+                        return [start_time_date, end_time_date]
+                    elif y_or_n.lower() =='no' or y_or_n.lower() =='n':
+                        #take them
+                        mo =' Look like you wouldnt like an appointment on this day....\nIf the is annything else i can help you with please type away, remember i can also book, cancel, reschedule and display appointments, and give you some information about any virus'
+                        db.collection('Meessage').document('111111').update({'Message': mo})
+                        return
+                    elif y_or_n.lower() =='change' or y_or_n.lower() =='new' or y_or_n.lower() =='c':
+                        Booking()
+                        return
+                    else:
+                        mo = ' Sorry did not understand your input please try again remeber: \n\t"Yes"  to see your specified doctors free time slots on ('+ str(date)+') \n\t"No" to termanate this whole process and \n\t"change" for selecting a new date and different time slot of need be'
+                        y_or_n = tags(mo)
             else:
+                print ('Your doctor is  free and we can continue to completing the booking')
                 return[start_dt_time, end_dt_time]
     else:
-            confirm2= True
-            return [start_dt_time, end_dt_time]
+           print('This means your doctor is not working that day so, pick a different doctor or pick a different  date and time slot')
+
         #I got it this is suppose to return the start date and time as confirmation
         
-def available_docs(Start_dt_time, End_dt_time):
-    print('check time')
-#     #This takes on the start_date_time and end_date_time and displays all doctors who
-#     #are available on that day and displays all doctors available on that day 
-#     #These would be the clints start and end time and date split to date, start time and end time 
-    
-#     #Start_dt_time and end_dt_time is from the users input
-    # db = firestore.client()
-    # start_dt_time = data()
-    # end_dt_time = data()
-    # db_date = db.collection
-    # pracNumber = find_doc()
-    # (u'Operational_Days').document()
-
-
-    if start_dt_time>=db_date and end_dt_time<=db_date2:
-        #get all doctors working at specific time slots with no appointment
-        #  3 conditions are  doctors are displayed
-        #all avaiable/working
-        #must not have an appointment on the timeslot the user wants to book for
-        #must be woking akeer but must have 
-        print('Mo: Please enter an offfice email for the specific doctor you see and like to choose')
-        input()
-        return practice_num
-
-    
-
-    
-
-
-
-
-
 def find_doc():
     print('find doctor')
     # This function searchs for a specific doctor through, either by surname or name or name and surname or office email
@@ -274,11 +247,7 @@ def find_doc():
             else:
                 prac_num = ''
                 break
-            
-        
 
-
-    
 def display_booking(client_Id, intent):
     #THE CLIENT ID IS FROM THE LOG IN PAGE imporrt from database
     db = firestore.client()
@@ -290,10 +259,11 @@ def display_booking(client_Id, intent):
 
     if intent.lower() == 'reschedule':
         resc = ' Please be informed you are entering the process of altering details of an existing booking, this means after making this change your old booking will no longer exist...\nPlease hold on while I fetch all bookings that can be altered.\nThe only bookings that can be altered are bookings no later than yesterday ('+ str(yesterday) + ')'
+        db.collection('Meessage').document('111111').update({'Message': resc})
+        time.sleep(2)
         #fetch all bookings whereby start_date_time is of the appointment >= today
         #store all in appointment[]
         Appointments
-        #display bookings
         if len(Appointments) == 0:
             resc = ' Oops sorry seems like there are no available bookings for you to alter, if your booking is older than yesterday then booking has already been removed from the system please try booking a new appointment...'
         elif len(Appointments) == 1:
@@ -339,7 +309,7 @@ def display_booking(client_Id, intent):
             resc = ' Please pick the booking you would like to change or enter the booking id of that booking'
             
     elif intent.lower() == 'cancel':
-        mo = ' You trying to cancel an appointment, To allow me to show you all recent appointments that you can cancel please enter "Yes" continue or "No" to cancel the process'
+        mo = ' You trying to cancel an appointment, please note you can only cancel appointments which are due to happen after or during '+str(today)+ '\nTo allow me to show you all recent appointments that you can cancel please enter "Yes" continue or "No" to cancel the process'
         input =  tags(mo).lower()
         while True:
             if input== 'yes' or input == 'continue' or input == 'y':
@@ -425,7 +395,10 @@ def display_booking(client_Id, intent):
         elif len(Appointments) > 1:
             mo = 'Here are your upcoming appointments:  \n\t'
             #Dislay out of line mybe use SLEEP.time
+            
             db.collection('Meessage').document('111111').update({'Message': mo})
+
+            #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
             return
 
 def Booking():
@@ -460,6 +433,8 @@ def Booking():
             break #after getting a doctor
         elif dec.lower() == 's' or dec.lower() == 'specific': 
             prac_num = find_doc()
+            #################MERGER DOC_STATUS WITH FIND DOCTOR
+            #################################################################DOC_STATUS FUNCTION
             break
         else:
             resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
@@ -481,7 +456,8 @@ def Booking():
 
              #Database add a booking into the database,Doctor_ID = prac_num, End_date = end_dt_tm, Start_date = start_dt_tm, patient_ID = client_ID
             sub = pSurname[0:3]
-            booking_id = sub + random_id  #Fetch the booking id created from the appointment created above using the client Id
+            sub2 = pName[0:1]
+            booking_id = sub + random_id + sub2 #Fetch the booking id created from the appointment created above using the client Id
             # #add user to db
             user_doc_ref = db.collection(u'Appointments').collection('Booking_ID').document(booking_id)
             user_doc_ref.set({
@@ -501,9 +477,20 @@ def Booking():
         else: 
             mo = 'Invalid input please try again, \n\tYes or No'
             input =  tags(mo).lower()
-   
     #DATABASE UPDATES APPPOINTMENTS DATABASE
-          
+def selenium():
+    print('spopo function comes here edit it of course')
+    sel = ' Are you trying to enquire or get some information about common diseases and or viruse, if so enter "Yes" if not enter "No"'
+    answer = tags(sel).lower()     
+    if answer == 'yes' or answer == 'y' or answer =="continue":
+        print('continue to seleinuem function of spopo')
+        #After spopos code break out of the function
+        return
+    elif answer == 'no' or answer == 'n' or answer =="cancel" or answer == 'stop':
+        sel = 'Okay, if the is anything else i can help you with please ask away, remember i can also book, cancel and reschedule appointments with any doctor in our system...'
+        #update databse and app
+        return
+
 
 def getResponse(ints, intents_json):
     #this is the function whos if statement must be modified for scheduling and rescheduling and booking and medical inquries
@@ -539,6 +526,11 @@ def getResponse(ints, intents_json):
         ####################Showing Appointments starts here######################################
         elif(i['tag']== 'checking' and i['tag']== tag):
             display_booking(client_ID, 'display')
+            break
+        ##########################################################################################################################################################################
+        ####################Meddical issues start here######################################
+        elif(i['tag']== 'medical' and i['tag']== tag):
+            selenium()
             break
         ##########################################################################################################################################################################
         ####################Any other tag######################################

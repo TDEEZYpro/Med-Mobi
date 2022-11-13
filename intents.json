@@ -11,7 +11,7 @@
         },
         {
             "tag": "name",
-            "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "what is this", "Who is this"],
+            "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "Who is this","what is this app about"],
             "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel an reschedule you appointments with any doctor in our database and give you some infotmation about todays disease, but my friends just call me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
         },
         {
@@ -50,8 +50,8 @@
             "responses": []
         },
         {
-            "tag": "medical-issue",
-            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease"],
+            "tag": "medical",
+            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease", "information on", "what is this viruse"],
             "responses": []
         },
         {
