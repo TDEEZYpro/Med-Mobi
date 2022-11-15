@@ -6,7 +6,7 @@
         },
         {
             "tag": "goodbye",
-            "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
+            "patterns": ["Bye", "See you later", "Goodbye", "good-bye", "Nice chatting to you, bye", "Till next time"],
             "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."]
         },
         {
@@ -21,7 +21,7 @@
         },
         {
             "tag": "options",
-            "patterns": ["What do you do", "How can you help", "what do you do", "What is your purpose", "What do you know", "Whats your job", "How do you work"],
+            "patterns": ["What do you do", "How can you help", "what do you do", "What is your purpose", "What do you know", "Whats your job", "How do you work", "How does this app work", "How do you work", "what is the function of this app", "what do you do"],
             "responses": ["I can: \n\t1. Book you an appointment with any available doctor or prefered doctor in our system. \n\t2. I cancel appointments. \n\t3. I can reschedule appointments. \n\tDisplay all upcoming bookings. \n\t5. I can tell you information about disease and viruse and their common causes treatment and definition."]
         },
         {
@@ -46,7 +46,7 @@
         },
         {
             "tag": "checking",
-            "patterns": ["display", "show me my appointment", "show", "i want to see my appointment", "display appointments", "show appointments", "when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
+            "patterns": ["Display", "display", "", "display my appointment", "show me my appointment", "show", "i want to see my appointment", "display appointments", "show appointments", "when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
             "responses": []
         },
         {
