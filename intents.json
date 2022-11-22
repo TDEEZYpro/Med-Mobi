@@ -16,7 +16,7 @@
         },
         {
             "tag": "noanswer",
-            "patterns": [],
+            "patterns": [""],
             "responses": ["Anyone there...", "Please giver me more information", "Not sure i understand", "I'm still here", "I'm still here are you?", "Do still require more assistance"]
         },
         {
