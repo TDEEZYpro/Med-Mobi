@@ -77,59 +77,68 @@ db = firestore.client()
 #         db_date = u'{}'.format(i.to_dict()['start_dt_time'])
 #         db_date2 = u'{}'.format(i.to_dict()['end_dt_time'])
      
+#################Specific###################
+# workDay = db.collection('Operational_Days').where('Doctor_ID','==','219958065').where('operational_type','==','working').get()
+# # the where with doc id is useless for any available doctor
+# for doc in workDay:
+#     dat1 = u'{}'.format(doc.to_dict()['start_dt_time'])
+#     dat2 = u'{}'.format(doc.to_dict()['end_dt_time'])
+#     print(dat1 + '  '+dat2)
+#     if dt1>=dat1 and dt2<=dat2:
+#         #if hes working on that day then we take hes practice number and then 
+#         availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==','219958065').get()
+#         print('step 1 achieved ')
+#         for i in availDocDate:
+#             print('step 2')
+#             date1 = u'{}'.format(i.to_dict()['Start_date'])
+#             date2 = u'{}'.format(i.to_dict()['End_date'])
+#             if dt1 == date1 and dt2 == date2:
+#                 print('booked')
+#             else:
+#                 print('doc is free')
+#     else:
+#             print('hade')
+#################All Available doctors###################
 dt1 = '2022-12-24 11:00'
 dt2 = '2022-12-24 11:30'
-#################Specific###################
-workDay = db.collection('Operational_Days').where('Doctor_ID','==','219958065').where('operational_type','==','working').get()
-# the where with doc id is useless for any available doctor
-for doc in workDay:
-    dat1 = u'{}'.format(doc.to_dict()['start_dt_time'])
-    dat2 = u'{}'.format(doc.to_dict()['end_dt_time'])
-    print(dat1 + '  '+dat2)
-    if dt1>=dat1 and dt2<=dat2:
-        #if hes working on that day then we take hes practice number and then 
-        availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==','219958065').get()
-        print('step 1 achieved ')
-        for i in availDocDate:
-            print('step 2')
-            date1 = u'{}'.format(i.to_dict()['Start_date'])
-            date2 = u'{}'.format(i.to_dict()['End_date'])
-            if dt1 == date1 and dt2 == date2:
-                print('booked')
-            else:
-                print('doc is free')
-    else:
-            print('hade')
-#################All Available doctors###################
 print('all avail start here')
 workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
 # the where with doc id is useless for any available doctor
 counter = 1
+allDoctors=[]
 for z in workDay:
     dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
     dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
     docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
-
+    availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+    # print(docNum)
     if dt1>=dat1 and dt2<=dat2:
         #if hes working on that day then we take hes practice number and then 
-        availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
-        print('step 1 achieved ')
         for i in availDocDate:
             date1 = u'{}'.format(i.to_dict()['Start_date'])
             date2 = u'{}'.format(i.to_dict()['End_date'])
-            if dt1 == date1 and dt2 == date2:
-                print('next')
-            else:
-                print(docNum)
+            # print('Start: ' +date1 + ' End ' + date2)
+            if dt1 != date1 and dt2 != date2:
+                #Remove duplicates from array
+                allDoctors.append(docNum)
+                print('Dr: ' + docNum)
+print(allDoctors)
+respo =''
+for a in allDoctors:
+    avDoc = db.collection("Doctors").where('PracticeNumber','==',a).get()
+    for b in avDoc:
+        Initial = u'{}'.format(b.to_dict()['Initials'])
+        Surname = u'{}'.format(b.to_dict()['Surname'])
+        Spech = u'{}'.format(b.to_dict()['Specialization'])
+        # loc = u'{}'.format(b.to_dict()['Office_Location'])
+        # dis = u'{}'.format(b.to_dict()['End_date'])
+        # timeslot = u'{}'.format(b.to_dict()['End_date'])
+        respo = respo + '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech #+ '\nOffice Location: ' + loc + '\nDistance From You: ' #+ dis + '\nRequested Timeslot: ' + str(timeslot)
+        
+print(respo)
 
-    else:
-            print('hade')
 #######################################################################
-# if dt1>=db_date and dt2<=db_date2:
     
-
-
-
 
 
 def clean_up_sentence(sentence):
@@ -169,13 +178,7 @@ def predict_class(sentence, model):
 
 
 def doc_status(number,start_dt_time ,end_dt_time):
-    ########################This functions other paremeter is LOCATION
-    #this takes the doc PracticeNumber and the requested start time and end time dte of the user and compare if doctor is working on the day and if yes
-    ##theen it goes to the appointment database and checks if he is not already book for that specific time slot if not it books the client boi
-    ##if no he has an appointment at that day and time slot then ill say hes booked and display the date and time when the doctor is available on that day the the user picks another time slot
 
-
-    #####START
     db = firestore.client()
 
     workDay = db.collection('Operational_Days').where('Doctor_ID','==',number).get()
@@ -193,46 +196,6 @@ def doc_status(number,start_dt_time ,end_dt_time):
     for doc in workDay:
         db_date = u'{}'.format(doc.to_dict()['start_dt_time'])
         db_date2 = u'{}'.format(doc.to_dict()['end_dt_time'])
-    #Nathi this takes the number which is the doctors practice number and goes to operational days and checks his time slots are within the users range
-    #db_date is the doctors operational day start_time_date and db_date2 is end_dt_time
-    #    userID = db.collection('Appointments').where('Patient_ID','==',client_ID).where('Start_date','>=',today).get()
-            #compare with appointments USER (start_dt_time and end_dt_time) AND DOCTORUSER (start_dt_time and end_dt_time) in that database to see if hes not booked or not already
-            #db_ap_date is the doctors appointment date actually start_date_time and db_ap_date2 is  end_date_time 
-            # date = start_dt_time[0]
-    #         chkslot = db.collection('Appoinments').document(number).collection('Booking_ID').get()
-    #         for doc in chkslot:
-    #             db_ap_date = u'{}'.format(doc.to_dict()['Start_date'])
-    #             db_ap_date2 = u'{}'.format(doc.to_dict()['End_date'])
-    #         if start_dt_time==db_ap_date and end_dt_time==db_ap_date2:
-    #             mo = ' Your doctor is booked for the same time slot you want.\nWould you like to see all the time slots this doctor is available on for this day (' + str(date) + ') then enter "Yes". \nIf you would like to change and book for a different date and time slot then enter "change" or enter "No" to stop or cancel this whole process...'
-    #             y_or_n = tags(mo)
-    #             while True:
-    #                 if y_or_n.lower() =='yes' or y_or_n.lower() =='y':
-    #                     mo = ' Please select a time slot.'
-    #                     #react native avaible slots
-    #                     slot = tags(mo)
-    #                     slots= slots.split('-')
-    #                     start_time_date= date + ' ' + slots[0]
-    #                     end_time_date = date + ' ' + slots[1]
-    #                     return [start_time_date, end_time_date]
-    #                 elif y_or_n.lower() =='no' or y_or_n.lower() =='n':
-    #                     #take them
-    #                     mo =' Look like you wouldnt like an appointment on this day....\nIf the is annything else i can help you with please type away, remember i can also book, cancel, reschedule and display appointments, and give you some information about any virus'
-    #                     db.collection('Meessage').document('111111').update({'Message': mo})
-    #                     return
-    #                 elif y_or_n.lower() =='change' or y_or_n.lower() =='new' or y_or_n.lower() =='c':
-    #                     Booking()
-    #                     return
-    #                 else:
-    #                     mo = ' Sorry did not understand your input please try again remeber: \n\t"Yes"  to see your specified doctors free time slots on ('+ str(date)+') \n\t"No" to termanate this whole process and \n\t"change" for selecting a new date and different time slot of need be'
-    #                     y_or_n = tags(mo)
-    #         else:
-    #             print ('Your doctor is  free and we can continue to completing the booking')
-    #             return[start_dt_time, end_dt_time]
-    # else:
-    #        print('This means your doctor is not working that day so, pick a different doctor or pick a different  date and time slot')
-
-        #I got it this is suppose to return the start date and time as confirmation
         
 def find_doc():
     print('find doctor')
@@ -695,15 +658,11 @@ def Booking():
     db = firestore.client()
     ###################################################Date
     resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\nWhat date would you like to book for?\n Please enter the date in the format: YYYY-MM-DD, for example 2022-05-24'
-    
-    bot_respon = db.collection(u'Meessage').document('111111').update({'Message' : resp})
-    user_input= ''
+
     date = tags(resp) 
     print(date)  
     ################################################TimeSlots######################################
     resp =' What time slots would you like?'
-    bot_respon = db.collection(u'Meessage').document('111111').update({'Message' : resp})
-    user_input= ''
     slot = tags(resp)
     print(slot)
     slots = []
@@ -713,12 +672,22 @@ def Booking():
     print(start_dt_tm, end_dt_tm)
     ################################################Doctor################################
     resp = ' Would you like to see any avaiable doctor on your selected date and time, enter "a" or \nDo you have a specific doctor you would like to see whos in our system then enter "s"'
-    user_input= ''
     dec = tags(resp)
     while True:
         if dec.lower() == 'a' or dec.lower() == 'available':
-             ################################################################################opperationaldays -> working -> where start_date<=start_dt_tm and end_date>=end_dt_tm
-            ##########CREATE A FUNCTION FOR THIS CAUSE RESCHEDULE uses it as well
+            ###############################################################################
+            resp = ' Would you like a doctor near you or in a another location?\n Please enter "n" or "near me" to see all doctors near your location \nor \nenter "another location" or "a" to pick a location you want'
+            pick = tags(resp).lower()
+            while True:
+                if pick == 'n' or pick == 'near me' or pick == 'near' or pick == 'close' or pick == 'close by':
+                    #locatios difference
+                    #wont display doctors that are more than 100km away
+                    print('picked near by')
+                elif pick == 'a' or pick == 'another location' or pick == 'new location' or pick == 'new' or pick == 'pick location':
+                    #locatios difference
+                    resp = ' Please enter the Province youd like to book at'
+                    #loops through databse checks all the doctors if the in that province then displays
+
             break #after getting a doctor
         elif dec.lower() == 's' or dec.lower() == 'specific': 
             prac_num = find_doc()
