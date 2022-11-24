@@ -419,15 +419,8 @@ def display_booking(client_Id, intent):
 
             while True:
                 if answer == 'yes' or answer == 'y' or answer =='confirm' or answer == 'continue':
-                    #Prompt for the date and time slot 
-                    resc = ' Please select a new date and time slot or either one: '
-                    date = tags(resc)
-                    resc = ' Please enter a new time slot or enter the old one if you dont want to change it:'
-                    slots = tags(resc)
-                    #react native display actually
-                    #now we automatically need to check if the same doctor he order for first is available in the new time slot then confirm to book with him again same day if not free, ask to dispay the doctor free time slots that day or pick any available doctor on the new time date
-
-
+                    resc = ' What would you like to alter about your appointment, \n\n\t\tTo change the time pleat'
+                    timeDate()
                     ############################Booking Intent, A choice available doctors############
                 elif answer == 'no' or answer == 'n' or answer =='stop' or answer == 'cancel':
                     resc = ' Appointment alreration process terminated.'
@@ -699,58 +692,80 @@ def display_booking(client_Id, intent):
             #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
             return
 
-def timeDate(ints, number):
+def timeDate(number, starttime,endtime):
     from datetime import datetime,timedelta
-    if ints == 'time':
-        #user wants to change or enter a time slot
-        response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
-        timeslot = tags(response)
-        while True:
-            try:
-                timeslot = datetime.strptime(timeslot, '%H:%M')
-                end = timeslot + timedelta(minutes=30)
-                timeslot = timeslot.strftime('%H:%M') + '-' + end
-                return date
-            except ValueError:
-                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                timeslot = tags(response)
+    response = ' What would you like to change: \n\n\t\tTo change the time please enter "time" or "t"\n\t\tTo change the date please enter "date" or "d"\n\t\tTo change both the date and time please enter "all" or "both"'
+    ints = tags(response)
+    while True:
+        if ints == 'time' or ints == 't' or ints == 'clock' :
+            #getting the date for time option
+            date = starttime.split(' ')
+            date = date[0] 
+            #getting the time for date option
+            starttime = starttime.split(' ')
+            endtime = endtime.split(' ')
+            slots = starttime[1] + '-' + endtime[1]
 
-    elif ints == 'datetime':
-        #user enters date and time slot
-        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
-        dates =tags(response)
-        while True:
-            try:
-                date = datetime.strptime(dates, '%Y-%m-%d')
-                date = date.strftime('%Y-%m-%d')
-                return date
-            except ValueError:
-                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                date = tags(response)          
+            #user wants to change or enter a time slot
+            response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
+            timeslot = tags(response)
+            while True:
+                try:
+                    # timeslot = datetime.strptime(timeslot, '%H:%M')
+                    # end = timeslot + timedelta(minutes=30)
+                    # timeslot = timeslot.strftime('%H:%M') + '-' + end
+                    slots = timeSlots(timeslot, date)
+                    start_tm_dt = slots[0]
+                    end_tm_dt = slots[1]
+                    return [start_tm_dt, end_tm_dt]
+                except ValueError:
+                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                    timeslot = tags(response)
 
-    elif ints == 'all':
-        #changes all 3
-        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
-        dates =tags(response)
-        while True:
-            try:
-                date = datetime.strptime(dates, '%Y-%m-%d')
-                date = date.strftime('%Y-%m-%d')
-                break
-            except ValueError:
-                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                date = tags(response)
-        ###################Slots incomplete even above
-        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
-        dates =tags(response)
-        while True:
-            try:
-                date = datetime.strptime(dates, '%Y-%m-%d')
-                date = date.strftime('%Y-%m-%d')
-                return date
-            except ValueError:
-                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                date = tags(response)
+        elif ints == 'date' or ints == 'day' or ints == 'd':
+            #user enters date and time slot
+            response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
+            date =tags(response)
+            while True:
+                try:
+                    date = datetime.strptime(date, '%Y-%m-%d')
+                    date = date.strftime('%Y-%m-%d')
+                    slots = timeSlots(slots, date)
+                    start_tm_dt = slots[0]
+                    end_tm_dt = slots[1]
+                    return [start_tm_dt, end_tm_dt]
+                except ValueError:
+                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                    date = tags(response)          
+        elif ints == 'all' or ints == 'date and time' or ints == 'date time' or ints == 'both':
+            #changes all 3
+            response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
+            dates =tags(response)
+            while True:
+                try:
+                    date = datetime.strptime(dates, '%Y-%m-%d')
+                    date = date.strftime('%Y-%m-%d')
+                    break
+                except ValueError:
+                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                    date = tags(response)
+            ###################Slots incomplete even above
+            response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
+            timeslot = tags(response)
+            while True:
+                try:
+                    # date = datetime.strptime(dates, '%Y-%m-%d')
+                    # date = date.strftime('%Y-%m-%d')
+                    slots = timeSlots(timeslot, date)
+                    start_tm_dt = slots[0]
+                    end_tm_dt = slots[1]
+                    return [start_tm_dt, end_tm_dt]
+                except ValueError:
+                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                    date = tags(response)
+        else:
+            response = ' Sorry seems you have entered an incorrect value please try again...'
+            ints = tags(response)
 
 def doc_status(docNum, start,end):
     workDay = db.collection('Operational_Days').where('Doctor_ID','==',docNum).where('operational_type','==','working').get()
@@ -774,6 +789,14 @@ def doc_status(docNum, start,end):
                     return 'free'
         else:
                 return 'unavailable'
+
+def timeSlots(times,date):
+	    #hve ti make a code that just adds 30 minutes
+        slots = []
+        slots = times.split('-')
+        start_dt_tm = date + ' ' + slots[0]
+        end_dt_tm = date + ' ' + slots[1]
+        return [start_dt_tm,end_dt_tm]
 
 def all_available(start, end):
     print('all avail start here')
@@ -804,7 +827,9 @@ def all_available(start, end):
     print(allDoctors)
     #Checks if the are doctors available if not it breaks
     if len(allDoctors) == 0:
-        return 'unavailable'
+        while True:
+            respo = ' Looks like the are no doctors available at the times you'
+        #return 'unavailable'
 
     respo =' Heres a list of doctors available: '
     #sorted by distance between
@@ -845,6 +870,11 @@ def all_available(start, end):
             respo = '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech #+ '\nOffice Location: ' + loc + '\nDistance From You: ' #+ dis + '\nRequested Timeslot: ' + str(timeslot)
             db.collection('Meessage').document('111111').update({'Message': respo})
             return prac_num
+        elif select == 'cancel' or select == ' exit' or select == 'terminate':
+            #breaks must call while function to return to main 
+            respo = ' You have choosen to termanate the process you can start a new enquiry with your next input'
+            db.collection('Meessage').document('111111').update({'Message': respo})
+            return
         else:
             respo = ' Invalid entry please try again, please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
             select = tags(respo)
@@ -853,18 +883,25 @@ def Booking():
     print('Booking')
     db = firestore.client()
     ###################################################Date
-    resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\nWhat date would you like to book for?\n'
-
+    resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\n'
+    resp = resp + ' What date would you like to book for?\nEnter the date in the following format: YYYY-MM-DD, for example 2022-05-24'
     date = tags(resp) 
+    while True:
+            try:
+                date = datetime.strptime(date, '%Y-%m-%d')
+                date = date.strftime('%Y-%m-%d')
+                break
+            except ValueError:
+                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                date = tags(response)
     print(date)  
     ################################################TimeSlots######################################
-    resp =' Please enter a time slots you would like?'
+    resp =' Please enter a time slots you would like? in the following format '
     slot = tags(resp)
     print(slot)
-    slots = []
-    slots = slot.split('-')
-    start_dt_tm = date + ' ' + slots[0]
-    end_dt_tm = date + ' ' + slots[1]
+    slots = timeSlots(slot, date)
+    start_dt_tm = slots[0]
+    end_dt_tm = slots[1]
     print(start_dt_tm, end_dt_tm)
     ################################################Doctor################################
     resp = ' Would you like to see any avaiable doctor on your selected date and time, enter "a" or \nDo you have a specific doctor you would like to see whos in our system then enter "s"'
