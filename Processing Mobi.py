@@ -693,7 +693,7 @@ def display_booking(client_Id, intent):
             return
 
 def timeDate(number, starttime,endtime):
-    #UPATED SHOULD HAVE THIS CODE
+    #UPATED SHOULD HAVE THIS CODE.....
     from datetime import datetime,timedelta
     response = ' What would you like to change: \n\n\t\tTo change the time please enter "time" or "t"\n\t\tTo change the date please enter "date" or "d"\n\t\tTo change both the date and time please enter "all" or "both"'
     ints = tags(response)
