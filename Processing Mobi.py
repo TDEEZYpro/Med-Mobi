@@ -78,75 +78,20 @@ db = firestore.client()
 #         db_date2 = u'{}'.format(i.to_dict()['end_dt_time'])
      
 #################Specific###################
-# workDay = db.collection('Operational_Days').where('Doctor_ID','==','219958065').where('operational_type','==','working').get()
-# # the where with doc id is useless for any available doctor
-# for doc in workDay:
-#     dat1 = u'{}'.format(doc.to_dict()['start_dt_time'])
-#     dat2 = u'{}'.format(doc.to_dict()['end_dt_time'])
-#     print(dat1 + '  '+dat2)
-#     if dt1>=dat1 and dt2<=dat2:
-#         #if hes working on that day then we take hes practice number and then 
-#         availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==','219958065').get()
-#         print('step 1 achieved ')
-#         for i in availDocDate:
-#             print('step 2')
-#             date1 = u'{}'.format(i.to_dict()['Start_date'])
-#             date2 = u'{}'.format(i.to_dict()['End_date'])
-#             if dt1 == date1 and dt2 == date2:
-#                 print('booked')
-#             else:
-#                 print('doc is free')
-#     else:
-#             print('hade')
+
 #################All Available doctors###################
 dt1 = '2022-12-24 11:00'
 dt2 = '2022-12-24 11:30'
-print('all avail start here')
-workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
-# the where with doc id is useless for any available doctor
-counter = 1
-allDoctors=[]
-for z in workDay:
-    dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
-    dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
-    docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
-    availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
-    # print(docNum)
-    if dt1>=dat1 and dt2<=dat2:
-        #if hes working on that day then we take hes practice number and then 
-        for i in availDocDate:
-            date1 = u'{}'.format(i.to_dict()['Start_date'])
-            date2 = u'{}'.format(i.to_dict()['End_date'])
-            # print('Start: ' +date1 + ' End ' + date2)
-            if dt1 != date1 and dt2 != date2:
-                #Remove duplicates from array
-                allDoctors.append(docNum)
-                print('Dr: ' + docNum)
-print(allDoctors)
-respo =''
-for a in allDoctors:
-    avDoc = db.collection("Doctors").where('PracticeNumber','==',a).get()
-    for b in avDoc:
-        Initial = u'{}'.format(b.to_dict()['Initials'])
-        Surname = u'{}'.format(b.to_dict()['Surname'])
-        Spech = u'{}'.format(b.to_dict()['Specialization'])
-        # loc = u'{}'.format(b.to_dict()['Office_Location'])
-        # dis = u'{}'.format(b.to_dict()['End_date'])
-        # timeslot = u'{}'.format(b.to_dict()['End_date'])
-        respo = respo + '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech #+ '\nOffice Location: ' + loc + '\nDistance From You: ' #+ dis + '\nRequested Timeslot: ' + str(timeslot)
-        
-print(respo)
 
 #######################################################################
     
 
 
 def clean_up_sentence(sentence):
+    # return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
     sentence_words = nltk.word_tokenize(sentence)
     sentence_words = [lemmatizer.lemmatize(word.lower()) for word in sentence_words]
     return sentence_words
-
-# return bag of words array: 0 or 1 for each word in the bag that exists in the sentence
 
 def bow(sentence, words, show_details=True):
     # tokenize the pattern
@@ -176,40 +121,66 @@ def predict_class(sentence, model):
         return_list.append({"intent": classes[r[0]], "probability": str(r[1])})
     return return_list
 
+def chatbot_response(msg):
+    msg = msg.lower()
+    ints = predict_class(msg, model)
+    res = getResponse(ints, intents)
+    print('Intents')
+    return res
 
-def doc_status(number,start_dt_time ,end_dt_time):
+def getResponse(ints, intents_json):
+    tag = ints[0]['intent']
+    list_of_intents = intents_json['intents']
+    
+    print(tag)
+    for i in list_of_intents:
+            ####################Showing Appointments starts here######################################
+        if(i['tag']== 'checking' and i['tag']== tag):
+            display_booking(client_ID, 'display')
+            print ('display')
+            break
+            ####################Meddical issues start here######################################
+        elif(i['tag']== 'medical' and i['tag']== tag):
+            print ('med')
+            selenium()
+            break
+            ####################Booking Appointments starts here######################################
+        elif(i['tag']== 'booking' and i['tag']== tag):
+            print ('book')
+            Booking()
+            ####################Canciling Appointments starts here######################################
+        elif(i['tag']== 'cancel' and i['tag']== tag):
+            print ('cancel')
+            display_booking(client_ID, 'cancel')
+            break
+            ####################Rescheduling Appointments starts here######################################
+        elif(i['tag']== 'reschedule' and i['tag']== tag):
+            print ('reschedu;l')
+            display_booking(client_ID,'reschedule')
+            break
+            ####################Any other tag######################################
+        elif(i['tag']== tag):
+            print ('default')
+            result = random.choice(i['responses'])
+            break
+            ###################UNKOWN INTENT######################################
+        else:
+            result = "Sorry unrecognised intent, please ask the right questions or statement"
+    return result
 
-    db = firestore.client()
-
-    workDay = db.collection('Operational_Days').where('Doctor_ID','==',number).get()
-    for i in workDay:
-        db_date = u'{}'.format(i.to_dict()['start_dt_time'])
-        db_date2 = u'{}'.format(i.to_dict()['end_dt_time'])
-     
-   
-     
-
-    #####END
-    print('check doc status')
-    db = firestore.client()
-    workDay = db.collection('Opertaionl_Day.').document(number).collection('working').where('operational_type','==','working').get()
-    for doc in workDay:
-        db_date = u'{}'.format(doc.to_dict()['start_dt_time'])
-        db_date2 = u'{}'.format(doc.to_dict()['end_dt_time'])
-        
 def find_doc():
     print('find doctor')
     # This function searchs for a specific doctor through, either by surname or name or name and surname or office email
     # then returns the doctors practice number when found for further use in booking
     db = firestore.client()
     mo = ' The are 4 options:\nYou can search your doctor by name, or surname, or name and surname or office email\n'
-    mo = mo + 'To search your doctor by:\n\tName enter "n" \n\tSurname enter "s"\n\tName and Surname enter "c" \n\tOffice email enter "e"'
+    mo = mo + 'To search your doctor by:\n\tName enter "n" \n\tSurname enter "s"\n\tInitials and Surname enter "c" \n\tOffice email enter "e"'
     prac_num =''
     #db send and retrive
     
     c_input = tags(mo)
     while bool(prac_num) == False:
-        if c_input.lower() == 'n':
+        if c_input.lower() == 'n' or c_input.lower() == 'name':
             mo = ' Please enter the Name of the doctor you want to book. e.g) "John" or "Dumi"...'
             docInput = tags(mo)
 
@@ -220,9 +191,28 @@ def find_doc():
                 # print(prac_num)
             #This all can be redudant if we display all the doctors the useer picks on and by picking one hes send the doctor name to us and we taking the practice number but
             if len(prac_num.split())>1:
-                mo2 = ' Oooh seems like there are too many doctors who share that  Name.\nPlease enter a different input for a more accurate output'
+                count = 1
+                mo = ' Oooh seems like there are too many doctors who share that  Name.\nPlease pick the number of the exact doctor you want if '
+                prac_num = prac_num.split()
+                for num in prac_num:
+                    doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
+                    for doc in doctors:
+                        pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
+                        pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
+                        pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
+            
+                    mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp)
+                    counter =+ 1
                 #pract_num = tage(moPractice Number2)
-                tags(mo2)
+                mo = mo + '\n\nPlease enter the number of the doctor you want...'
+                select = tags(mo)
+                while True:
+                    x = select.isnumeric()
+                    if x == True and select <= counter:
+                        prac_num = prac_num[(select -1)]
+                    else:
+                        mo = ' Invalid input please try again...'
+                        select = tags(mo)
                 #new prompt should have another field for more details
                 #more where functions
             elif len(prac_num.split())<1:
@@ -232,7 +222,7 @@ def find_doc():
                 print(docInput + ' and ' + prac_num)
                 return prac_num
 
-        elif c_input.lower() == 's':
+        elif c_input.lower() == 's' or c_input.lower() == 'surname':
                 mo =' Please enter the Surname of the doctor you want to book. e.g) "van de merwe" or "zwane"...'
                 docInput = docInput = tags(mo)
                 docs = db.collection('Doctors').where("Surname","==",docInput).get()
@@ -240,18 +230,36 @@ def find_doc():
                         prac_num = u'{}'.format(doc.to_dict()['PracticeNumber'])
                         # print(prac_num)
                 if len(prac_num.split())>1:
-                    mo2 = 'Oooh seems like there are too many doctors who share that  Surname.\nPlease enter a different input for a more accurate output'
-                    #pract_num = tage(mo2)
-                    tags(mo2)
-                    #new prompt should have another field for more details
-                    #more where functions
+                    mo2 = 'Oooh seems like there are too many doctors who share that Surname.\nPlease enter the number for the doctor you want'
+                    prac_num = prac_num.split()
+                    for num in prac_num:
+                        doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
+                        for doc in doctors:
+                            pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
+                            pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
+                            pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
+                
+                        mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp)
+                        counter =+ 1
+                    #pract_num = tage(moPractice Number2)
+                    mo = mo + '\n\nPlease enter the number of the doctor you want...'
+                    select = tags(mo)
+                    while True:
+                        x = select.isnumeric()
+                        if x == True and select <= counter:
+                            prac_num = prac_num[(select -1)]
+                        else:
+                            mo = ' Invalid input please try again...'
+                            select = tags(mo)
+
                 elif len(prac_num.split())<1:
                     mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
                     tags(mo2)
                 else:
                     return prac_num
-        elif c_input.lower() == 'c':
-            mo = ' Please enter the Initials AND Surname of the doctor you want to book. e.g) "Chris Klopper" or "Frank Mahlangu"...'
+
+        elif c_input.lower() == 'c' or c_input.lower() == 'initials' or c_input.lower() == 'initials and surname':
+            mo = ' Please enter the Initials AND Surname of the doctor you want to book. e.g) "MC Klopper" or "IR Mahlangu"...'
             docInput = docInput = tags(mo)
             docInput = docInput.split()
             initials = docInput[0]
@@ -263,36 +271,72 @@ def find_doc():
                     prac_num = u'{}'.format(doc.to_dict()['PracticeNumber'])
                     # print(prac_num)
             if len(prac_num.split())>1:
-                mo2 ='Oooh seems like there are too many doctors who share that Name and Surname.\nPlease enter a different input for a more accurate output'
-                #pract_num = tage(mo2)
-                tags(mo2)
-                #new prompt should have another field for more details
-                #more where functions
+                mo2 ='Oooh seems like there are too many doctors who share that Name and Surname.\nPlease pick the number of the doctor you want '
+                prac_num = prac_num.split()
+                for num in prac_num:
+                    doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
+                    for doc in doctors:
+                        pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
+                        pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
+                        pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
+            
+                    mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp)
+                    counter =+ 1
+                #pract_num = tage(moPractice Number2)
+                mo = mo + '\n\nPlease enter the number of the doctor you want...'
+                select = tags(mo)
+                while True:
+                    x = select.isnumeric()
+                    if x == True and select <= counter:
+                        prac_num = prac_num[(select -1)]
+                    else:
+                        mo = ' Invalid input please try again...'
+                        select = tags(mo)
+
             elif len(prac_num.split())<1:
                 mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
                 tags(mo2)
             else:
                 return prac_num
-        elif c_input.lower() == 'e':
+
+        elif c_input.lower() == 'e' or c_input.lower() == 'email' or c_input.lower() == 'office email' or c_input.lower() == 'office' or c_input.lower() == 'mail':
             mo = ' Please enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...'
             docInput = tags(mo)
             docs = db.collection('Doctors').where("Email","==",docInput).get()
             for doc in docs:
                 prac_num = u'{}'.format(doc.to_dict()['PracticeNumber'])
-
                 # print(prac_num)
+
             if len(prac_num.split())>1:
-                mo2 ='Oooh seems like there are too many doctors who share that email.\nPlease enter a different input for a more accurate output'
-                #pract_num = tage(mo2)
-                tags(mo2)
-                #new prompt should have another field for more details
-                #more where functions
+                mo2 ='Oooh seems like there are too many doctors who share that email.\nPlease enter the number of the doctor you want to pick...'
+                prac_num = prac_num.split()
+                for num in prac_num:
+                    doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
+                    for doc in doctors:
+                        pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
+                        pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
+                        pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
+            
+                    mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp)
+                    counter =+ 1
+                #pract_num = tage(moPractice Number2)
+                mo = mo + '\n\nPlease enter the number of the doctor you want...'
+                select = tags(mo)
+                while True:
+                    x = select.isnumeric()
+                    if x == True and select <= counter:
+                        prac_num = prac_num[(select -1)]
+                    else:
+                        mo = ' Invalid input please try again...'
+                        select = tags(mo)
+
             elif len(prac_num.split())<1:
                 mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
                 tags(mo2)
             else:
                 print(docInput + ' and ' + prac_num)
                 return prac_num
+
         else: 
             #need to fix
             mo2 ='Mo: Sorry you must have entered an incorrect input please try again or type "cancel" to end the process'
@@ -311,6 +355,7 @@ def display_booking(client_Id, intent):
     today = datetime.now().date().strftime("%Y-%m-%d %H:%M" )
     yesterday = (datetime.now()- timedelta(days=1)).strftime("%Y-%m-%d %H:%M")
     print (yesterday)
+    counter = 1
     Appointments = []
 
     if intent.lower() == 'reschedule':
@@ -617,7 +662,7 @@ def display_booking(client_Id, intent):
             print(pDoctorNum)
             print(pDoctorI)
 
-            mo = mo + ' You have an upcoming appointment, here are the details of this appointment: \n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) + '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm)
+            mo = mo + ' You have an upcoming appointment, here are the details of this appointment: \n\t\t\tNumber'+ counter+'\n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) + '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm)
 
             new = tags(mo)
             return new
@@ -645,24 +690,175 @@ def display_booking(client_Id, intent):
                         pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
                         pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
                 
-                mo = mo + '\n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm) +'\n\n'
+                mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm) +'\n\n'
+                counter =+ 1
+           
             mo = mo + 'Here are all your bookings hope to see you soon...'
             db.collection('Meessage').document('111111').update({'Message': mo})
             data()
             #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
             return
 
+def timeDate(ints, number):
+    from datetime import datetime,timedelta
+    if ints == 'time':
+        #user wants to change or enter a time slot
+        response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
+        timeslot = tags(response)
+        while True:
+            try:
+                timeslot = datetime.strptime(timeslot, '%H:%M')
+                end = timeslot + timedelta(minutes=30)
+                timeslot = timeslot.strftime('%H:%M') + '-' + end
+                return date
+            except ValueError:
+                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                timeslot = tags(response)
+
+    elif ints == 'datetime':
+        #user enters date and time slot
+        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
+        dates =tags(response)
+        while True:
+            try:
+                date = datetime.strptime(dates, '%Y-%m-%d')
+                date = date.strftime('%Y-%m-%d')
+                return date
+            except ValueError:
+                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                date = tags(response)          
+
+    elif ints == 'all':
+        #changes all 3
+        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
+        dates =tags(response)
+        while True:
+            try:
+                date = datetime.strptime(dates, '%Y-%m-%d')
+                date = date.strftime('%Y-%m-%d')
+                break
+            except ValueError:
+                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                date = tags(response)
+        ###################Slots incomplete even above
+        response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
+        dates =tags(response)
+        while True:
+            try:
+                date = datetime.strptime(dates, '%Y-%m-%d')
+                date = date.strftime('%Y-%m-%d')
+                return date
+            except ValueError:
+                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
+                date = tags(response)
+
+def doc_status(docNum, start,end):
+    workDay = db.collection('Operational_Days').where('Doctor_ID','==',docNum).where('operational_type','==','working').get()
+    # the where with doc id is useless for any available doctor
+    for doc in workDay:
+        dat1 = u'{}'.format(doc.to_dict()['start_dt_time'])
+        dat2 = u'{}'.format(doc.to_dict()['end_dt_time'])
+        #print(dat1 + '  '+dat2)
+        if start >= dat1 and end <= dat2:
+            #if hes working on that day then we take hes practice number and then 
+            availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+            print('step 1 achieved ')
+            for i in availDocDate:
+                print('step 2')
+                date1 = u'{}'.format(i.to_dict()['Start_date'])
+                date2 = u'{}'.format(i.to_dict()['End_date'])
+                if start == date1 and end == date2:
+                    return 'booked'
+                    #prompt if the want to change anything
+                else:
+                    return 'free'
+        else:
+                return 'unavailable'
+
+def all_available(start, end):
+    print('all avail start here')
+    workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
+    # the where with doc id is useless for any available doctor
+    counter = 1
+    #counter is for displaying doctor 
+
+    allDoctors=[]
+    for z in workDay:
+        dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
+        dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
+        docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
+        availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+        # print(docNum)
+        if start >= dat1 and end <= dat2:
+            #if hes working on that day then we take hes practice number and then 
+            for i in availDocDate:
+                date1 = u'{}'.format(i.to_dict()['Start_date'])
+                date2 = u'{}'.format(i.to_dict()['End_date'])
+                # print('Start: ' +date1 + ' End ' + date2)
+                if start != date1 and end != date2:
+                    #Remove duplicates from array
+                    ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT 
+                    #read comment above
+                    allDoctors.append(docNum)
+                    print('Dr: ' + docNum)
+    print(allDoctors)
+    #Checks if the are doctors available if not it breaks
+    if len(allDoctors) == 0:
+        return 'unavailable'
+
+    respo =' Heres a list of doctors available: '
+    #sorted by distance between
+    for a in allDoctors:
+        avDoc = db.collection("Doctors").where('PracticeNumber','==',a).get()
+        for b in avDoc:
+            Initial = u'{}'.format(b.to_dict()['Initials'])
+            Surname = u'{}'.format(b.to_dict()['Surname'])
+            Spech = u'{}'.format(b.to_dict()['Specialization'])
+            # loc = u'{}'.format(b.to_dict()['Office_Location'])
+            # dis = u'{}'.format(b.to_dict()['End_date'])
+            # timeslot = u'{}'.format(b.to_dict()['End_date'])
+            respo = respo + '\nNumber: ' + str(counter)+ '\nDoctor: Dr '+ str(Initial) + ' '+ str(Surname)+ '\nSpecialization: ' + str(Spech) + '\n\n'
+            counter+=1
+            ####RiGH OUTPUT STATEMENT BELOW DELETE ABOVE
+            #respo = respo + '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech + '\nOffice Location: ' + loc + '\nDistance From You: ' + dis + '\nRequested Timeslot: ' + str(timeslot)
+    
+    respo  = respo + ' Please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
+    print(respo)
+    #location shortest , prompt to display close to him/her or enter a provincee
+    #must return a practice number\
+    select = tags(respo)
+    
+    while True:
+        x = select.isnumeric()
+        if x == True and select <= counter:
+            prac_num = allDoctors[(select-1)]
+            #if x is a number and value enter is not greater than the last value count was
+            #display the doctor 
+            avDoc = db.collection("Doctors").where('PracticeNumber','==',prac_num).get()
+            for det in avDoc:
+                Initial = u'{}'.format(det.to_dict()['Initials'])
+                Surname = u'{}'.format(det.to_dict()['Surname'])
+                Spech = u'{}'.format(det.to_dict()['Specialization'])
+                # loc = u'{}'.format(det.to_dict()['Office_Location'])
+                # dis = u'{}'.format(det.to_dict()['End_date'])
+                # timeslot = u'{}'.format(det.to_dict()['End_date'])
+            respo = '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech #+ '\nOffice Location: ' + loc + '\nDistance From You: ' #+ dis + '\nRequested Timeslot: ' + str(timeslot)
+            db.collection('Meessage').document('111111').update({'Message': respo})
+            return prac_num
+        else:
+            respo = ' Invalid entry please try again, please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
+            select = tags(respo)
 
 def Booking():
     print('Booking')
     db = firestore.client()
     ###################################################Date
-    resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\nWhat date would you like to book for?\n Please enter the date in the format: YYYY-MM-DD, for example 2022-05-24'
+    resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\nWhat date would you like to book for?\n'
 
     date = tags(resp) 
     print(date)  
     ################################################TimeSlots######################################
-    resp =' What time slots would you like?'
+    resp =' Please enter a time slots you would like?'
     slot = tags(resp)
     print(slot)
     slots = []
@@ -682,17 +878,19 @@ def Booking():
                 if pick == 'n' or pick == 'near me' or pick == 'near' or pick == 'close' or pick == 'close by':
                     #locatios difference
                     #wont display doctors that are more than 100km away
+                    prac_num = all_available(start_dt_tm, end_dt_tm)
                     print('picked near by')
+                    break
                 elif pick == 'a' or pick == 'another location' or pick == 'new location' or pick == 'new' or pick == 'pick location':
                     #locatios difference
                     resp = ' Please enter the Province youd like to book at'
                     #loops through databse checks all the doctors if the in that province then displays
+                else:
+                    resp = 'Invalid input please try again...'
+                    pick = tags(resp).lower()
 
-            break #after getting a doctor
         elif dec.lower() == 's' or dec.lower() == 'specific': 
             prac_num = find_doc()
-            #################MERGER DOC_STATUS WITH FIND DOCTOR
-            #################################################################DOC_STATUS FUNCTION
             break
         else:
             resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
@@ -740,7 +938,7 @@ def Booking():
         else: 
             mo = 'Invalid input please try again, \n\tYes or No'
             confrim_appnt =  tags(mo).lower()
-    #DATABASE UPDATES APPPOINTMENTS DATABASE
+ 
 def selenium():
     from selenium import webdriver
     from selenium.webdriver.common.keys import Keys
@@ -855,82 +1053,8 @@ def selenium():
         #update databse and app
         return
 
-
-def getResponse(ints, intents_json):
-    #this is the function whos if statement must be modified for scheduling and rescheduling and booking and medical inquries
-    #These functions work but im not sure cause my pc is acting up
-    tag = ints[0]['intent']
-    list_of_intents = intents_json['intents']
-    
-    print(tag)
-    #This is how we need to code the pop-ups but we need this whole entire function to save inputed data
-    for i in list_of_intents:
-        #Now we can add functions in the if statements that will take from the next user input
-        
-            ##########################################################################################################################################################################
-            ####################Showing Appointments starts here######################################
-        if(i['tag']== 'checking' and i['tag']== tag):
-            display_booking(client_ID, 'display')
-            print ('display')
-            break
-            ##########################################################################################################################################################################
-            ####################Meddical issues start here######################################
-        elif(i['tag']== 'medical' and i['tag']== tag):
-            print ('med')
-            selenium()
-            break
-        elif(i['tag']== 'booking' and i['tag']== tag):
-            #needs calender and after will take user in3/put through a function
-            #Must check if date is not before today, if doctor will be availble and if time is fine
-            print ('book')
-     
-       
-            ##########################################################################################################################################################################
-            ####################Booking Appointments starts here######################################
-            #This must possibly be initialised as an array
-            Booking()
-            ##########################################################################################################################################################################
-            ####################Canciling Appointments starts here######################################
-        elif(i['tag']== 'cancel' and i['tag']== tag):
-            print ('cancel')
-            #will use a function to determine if the is any booking anytime soon and will ask if you want to cancel this booking
-            display_booking(client_ID, 'cancel')
-            break
-            ##########################################################################################################################################################################
-            ####################Rescheduling Appointments starts here######################################
-        elif(i['tag']== 'reschedule' and i['tag']== tag):
-            print ('reschedu;l')
-            #will have anothe if statement to determine if user has any booking still open to rebook for
-            #this will show current booking and display a calender of when next youd like to book
-            display_booking(client_ID,'reschedule')
-            break
-    
-            ##########################################################################################################################################################################
-            ####################Any other tag######################################
-        elif(i['tag']== tag):
-            print ('default')
-            #this is for any other intent like greetings, goodbyes and so on
-            result = random.choice(i['responses'])
-            break
-            #########################################################################################################################################################################
-            ###################UNKOWN INTENT######################################
-        else:
-            #this is for an unrecognised intent
-            result = "Please ask the right questions or statement"
-    return result
-
-def chatbot_response(msg):
-    msg = msg.lower()
-    ints = predict_class(msg, model)
-    res = getResponse(ints, intents)
-    print('Intents')
-    return res
-
 def data():
         db = firestore.client()
-        # getdata=checkValue()
-        # while getdata==False:
-        
         user_input =""
         time_loop()
         bot_respon =  db.collection('Meessage').document('123457').get()
@@ -943,8 +1067,6 @@ def data():
 
 def tags(mo):
     db = firestore.client()
-    #send mo response to db
-     #db send and retrive
     db.collection(u'Meessage').document('111111').update({'Message' : mo})
     user_input= ''
     time_loop()
@@ -958,7 +1080,6 @@ def time_loop():
     user_input= u'{}'.format(bot_respon.to_dict()['Message'])
     num = 2
     while user_input == '' or bool(user_input) == False:
-        # time.sleep(num)
         bot_respon =  db.collection('Meessage').document('123457').get()
         user_input= u'{}'.format(bot_respon.to_dict()['Message']) 
         if user_input == '' or bool(user_input) == False:
@@ -969,6 +1090,7 @@ def time_loop():
 
 print('started')
 
+#########This while loop need to be a function
 while True:
     
         #print('Mo: ' + chatbot_response(input('You: ') ))
