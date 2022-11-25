@@ -1011,11 +1011,12 @@ def all_available(start, end):
                 date2 = u'{}'.format(i.to_dict()['End_date'])
                 # print('Start: ' +date1 + ' End ' + date2)
                 if start != date1 and end != date2:
-                    #Remove duplicates from array
                     ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT 
                     #read comment above
-                    allDoctors.append(docNum)
-                    print('Dr: ' + docNum)
+                    check = docNum in allDoctors
+                    if check == False:
+                        allDoctors.append(docNum)
+                        print('Dr: ' + docNum)
     print( len(allDoctors))
     print(allDoctors)
     #Checks if the are doctors available if not it breaks
