@@ -84,7 +84,8 @@ dt1 = '2022-12-24 11:00'
 dt2 = '2022-12-24 11:30'
 
 #######################################################################
-    
+
+###ADD Doc_status to allavailable and Find_doc, Check for repeating values on the allavaible array thatas all
 
 
 def clean_up_sentence(sentence):
@@ -175,7 +176,10 @@ def find_doc():
     db = firestore.client()
     mo = ' The are 4 options:\nYou can search your doctor by name, or surname, or name and surname or office email\n'
     mo = mo + 'To search your doctor by:\n\tName enter "n" \n\tSurname enter "s"\n\tInitials and Surname enter "c" \n\tOffice email enter "e"'
-    prac_num =''
+    prac_num =[]
+    # if the orac num gives you erros i changed it from prac_num = ''
+
+
     #db send and retrive
     
     c_input = tags(mo)
@@ -191,7 +195,7 @@ def find_doc():
                 # print(prac_num)
             #This all can be redudant if we display all the doctors the useer picks on and by picking one hes send the doctor name to us and we taking the practice number but
             if len(prac_num.split())>1:
-                count = 1
+                counter = 1
                 mo = ' Oooh seems like there are too many doctors who share that  Name.\nPlease pick the number of the exact doctor you want if '
                 prac_num = prac_num.split()
                 for num in prac_num:
@@ -209,7 +213,12 @@ def find_doc():
                 while True:
                     x = select.isnumeric()
                     if x == True and int(select) <= counter:
-                        prac_num = prac_num[(select -1)]
+                        prac_num = prac_num[(int(select) -1)]
+                    elif select == 'cancel' or select == 'c' or select == 'terminate':
+                        mo = " Process of finding a doctor has been terminated..."
+                        db.collection('Meessage').document('111111').update({'Message': mo})
+                        time_loop()
+                        return
                     else:
                         mo = ' Invalid input please try again...'
                         select = tags(mo)
@@ -1041,7 +1050,7 @@ def all_available(start, end):
     while True:
         x = select.isnumeric()
         if x == True and int(select) <= counter:
-            prac_num = prac_num[(int(select) -1)]
+            prac_num = allDoctors[(int(select) -1)]
             #if x is a number and value enter is not greater than the last value count was
             #display the doctor 
             avDoc = db.collection("Doctors").where('PracticeNumber','==',prac_num).get()
