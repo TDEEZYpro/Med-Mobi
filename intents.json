@@ -1,7 +1,7 @@
 {
     "intents": [{
             "tag": "salutation",
-            "patterns": ["Hi", "Hey", "Hello", "Hii", "Hola", "Ekse", "Hi there", "Anyone there", "Yo", "Whats up", "I am", "I'm", "Is anyone there", "Good morning", "Good day"],
+            "patterns": ["hi", "hey", "hello", "hii", "hola", "ekse", "Hi there", "Anyone there", "Yo", "Whats up", "I am", "I'm", "Is anyone there", "Good morning", "Good day"],
             "responses": ["Hey Stranger, what can i help you with?", "Good day, How can I help you", "Howzit, How can i assist you today?", "Hello you, How can I help?", "Hii you, How can I assist you today?", "Hey there, what would you like help with today?", "Whats up, How can i be of assistance to you?"]
         },
         {
@@ -31,7 +31,7 @@
         },
         {
             "tag": "booking",
-            "patterns": ["book appointment", "book consultation", "I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
+            "patterns": ["book", "booking","book appointment", "book consultation", "I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
             "responses": []
         },
         {
