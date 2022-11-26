@@ -73,18 +73,6 @@ print(client_Email)
 
 db = firestore.client()
 
-# for i in workDay:
-#         db_date = u'{}'.format(i.to_dict()['start_dt_time'])
-#         db_date2 = u'{}'.format(i.to_dict()['end_dt_time'])
-     
-#################Specific###################
-
-#################All Available doctors###################
-dt1 = '2022-12-24 11:00'
-dt2 = '2022-12-24 11:30'
-
-#######################################################################
-
 ###ADD Doc_status to allavailable and Find_doc, Check for repeating values on the allavaible array thatas all
 
 
@@ -137,7 +125,7 @@ def getResponse(ints, intents_json):
     for i in list_of_intents:
             ####################Showing Appointments starts here######################################
         if(i['tag']== 'checking' and i['tag']== tag):
-            display_booking(client_ID, 'display')
+            display_booking('display')
             print ('display')
             break
             ####################Meddical issues start here######################################
@@ -152,12 +140,12 @@ def getResponse(ints, intents_json):
             ####################Canciling Appointments starts here######################################
         elif(i['tag']== 'cancel' and i['tag']== tag):
             print ('cancel')
-            display_booking(client_ID, 'cancel')
+            display_booking('cancel')
             break
             ####################Rescheduling Appointments starts here######################################
         elif(i['tag']== 'reschedule' and i['tag']== tag):
             print ('reschedu;l')
-            display_booking(client_ID,'reschedule')
+            display_booking('reschedule')
             break
             ####################Any other tag######################################
         elif(i['tag']== tag):
@@ -357,7 +345,7 @@ def find_doc():
                 prac_num = ''
                 break
 
-def display_booking(client_Id, intent):
+def display_booking(intent):
     #THE CLIENT ID IS FROM THE LOG IN PAGE imporrt from database
     db = firestore.client()
     from datetime import date, datetime, timedelta
