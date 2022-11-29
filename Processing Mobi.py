@@ -417,56 +417,48 @@ def display_booking(intent):
 
             while True:
                 if answer == 'yes' or answer == 'y' or answer =='confirm' or answer == 'continue':
-                   slots = timeDate() 
-                   start_dt_tm = slots[0]
-                   end_dt_tm = slots[1]
-                   while True:
+                    resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                    dates = tags(resc)
+                    slots = selectDT(dates)
+                    start_dt_tm = slots[0]
+                    end_dt_tm = slots[1]
+                    print(start_dt_tm, end_dt_tm)
+                    while True:
                         status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
                         if status == 'booked':
                             resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
                             answer = tags(resp).lower()
                             while True:
                                 if answer == 'yes' or  answer == 'y':
-                                    slots = timeDate(start_dt_tm,end_dt_tm)
+                                    resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                                    dates = tags(resc)
+                                    slots = selectDT(dates)
                                     start_dt_tm = slots[0]
                                     end_dt_tm = slots[1]
                                     print(start_dt_tm, end_dt_tm)
-                                    status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
-                                    if status == 'booked' or status == 'unavailabe':
-                                        resp = ' Sorry seems like that doctor is still not in on that day would you like to try again? yes or no '
-                                        lastanswer = tags(resp).lower()
-                                        if lastanswer == 'yes' or lastanswer == 'y' or lastanswer == 'continue' or  lastanswer == 'proceed':
-                                            resp = ' ok lets try again'
-                                        elif lastanswer == 'no' or lastanswer == 'n' or lastanswer == 'cancel' or  lastanswer == 'terminate':
-                                            return 
-                                        else:
-                                            resp = ' Could not understand your input please try again, remember use yes or no'
+                                    break
                                 elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                                    resc = ' Appointment alreration process terminated.'
+                                    db.collection('Meessage').document('111111').update({'Message': resc})
                                     return
                                 else: 
                                     resp = ' Could not understand your input please try again, remember use yes or no'
-                                answer = tags(resp).lower()
+                                    answer = tags(resp).lower()
                         elif status == 'unavailabe':
                             resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
                             answer = tags(resp).lower()
                             while True:
                                 if answer == 'yes' or  answer == 'y':
-                                    slots = timeDate(start_dt_tm,end_dt_tm)
+                                    resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                                    dates = tags(resc)
+                                    slots = selectDT(dates)
                                     start_dt_tm = slots[0]
                                     end_dt_tm = slots[1]
                                     print(start_dt_tm, end_dt_tm)
-                                    status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
-                                    if status == 'booked' or status == 'unavailabe':
-                                        resp = ' Sorry seems like that doctor is still not in on that day would you like to try again? yes or no '
-                                        lastanswer = tags(resp).lower()
-                                        if lastanswer == 'yes' or lastanswer == 'y' or lastanswer == 'continue' or  lastanswer == 'proceed':
-                                            resp = ' ok lets try again'
-                                        elif lastanswer == 'no' or lastanswer == 'n' or lastanswer == 'cancel' or  lastanswer == 'terminate':
-                                            return 
-                                        else:
-                                            resp = ' Could not understand your input please try again, remember use yes or no'
-                                
+                                    break
                                 elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                                    resc = ' Appointment alreration process terminated.'
+                                    db.collection('Meessage').document('111111').update({'Message': resc})
                                     return
                                 else: 
                                     resp = ' Could not understand your input please try again, remember use yes or no'
@@ -493,12 +485,15 @@ def display_booking(intent):
                             db.collection('Meessage').document('111111').update({'Message': resp})
                             time_loop()
                             return
-
                     ############################Booking Intent, A choice available doctors############
                 elif answer == 'no' or answer == 'n' or answer =='stop' or answer == 'cancel':
                     resc = ' Appointment alreration process terminated.'
                     db.collection('Meessage').document('111111').update({'Message': resc})
                     return
+                else:
+                    resc = ' Sorry could not understand your user input please try again remeber enter yes or no.'
+                    answer = tags(resc).lower()
+
         elif count > 1:
             resc = ' You have the following appointments which you can alter: \n\t'
             user = db.collection('users').where('IdNumber','==',client_ID).get()
@@ -558,9 +553,12 @@ def display_booking(intent):
             answer = tags(resc).lower()
             while True:
                 if answer == 'yes' or answer == 'y' or answer =='confirm' or answer == 'continue':
-                    slots = timeDate(start_dt_tm,end_dt_tm)
+                    resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                    dates = tags(resc)
+                    slots = selectDT(dates)
                     start_dt_tm = slots[0]
                     end_dt_tm = slots[1]
+                    print(start_dt_tm, end_dt_tm)
                     while True:
                         status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
                         if status == 'booked':
@@ -568,45 +566,30 @@ def display_booking(intent):
                             answer = tags(resp).lower()
                             while True:
                                 if answer == 'yes' or  answer == 'y':
-                                    slots = timeDate(start_dt_tm,end_dt_tm)
+                                    resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                                    dates = tags(resc)
+                                    slots = selectDT(dates)
                                     start_dt_tm = slots[0]
                                     end_dt_tm = slots[1]
                                     print(start_dt_tm, end_dt_tm)
-                                    status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
-                                    if status == 'booked' or status == 'unavailabe':
-                                        resp = ' Sorry seems like that doctor is still not in on that day would you like to try again? yes or no '
-                                        lastanswer = tags(resp).lower()
-                                        if lastanswer == 'yes' or lastanswer == 'y' or lastanswer == 'continue' or  lastanswer == 'proceed':
-                                            resp = ' ok lets try again'
-                                        elif lastanswer == 'no' or lastanswer == 'n' or lastanswer == 'cancel' or  lastanswer == 'terminate':
-                                            return 
-                                        else:
-                                            resp = ' Could not understand your input please try again, remember use yes or no'
+                                    break
                                 elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
                                     return
                                 else: 
                                     resp = ' Could not understand your input please try again, remember use yes or no'
-                                answer = tags(resp).lower()
+                                    answer = tags(resp).lower()
                         elif status == 'unavailabe':
                             resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
                             answer = tags(resp).lower()
                             while True:
                                 if answer == 'yes' or  answer == 'y':
-                                    slots = timeDate(start_dt_tm,end_dt_tm)
-                                    start_dt_tm = slots[0]
-                                    end_dt_tm = slots[1]
-                                    print(start_dt_tm, end_dt_tm)
-                                    status = doc_status(pDoctorNum, start_dt_tm,end_dt_tm).lower()
-                                    if status == 'booked' or status == 'unavailabe':
-                                        resp = ' Sorry seems like that doctor is still not in on that day would you like to try again? yes or no '
-                                        lastanswer = tags(resp).lower()
-                                        if lastanswer == 'yes' or lastanswer == 'y' or lastanswer == 'continue' or  lastanswer == 'proceed':
-                                            resp = ' ok lets try again'
-                                        elif lastanswer == 'no' or lastanswer == 'n' or lastanswer == 'cancel' or  lastanswer == 'terminate':
-                                            return 
-                                        else:
-                                            resp = ' Could not understand your input please try again, remember use yes or no'
-                                
+                                        resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
+                                        dates = tags(resc)
+                                        slots = selectDT(dates)
+                                        start_dt_tm = slots[0]
+                                        end_dt_tm = slots[1]
+                                        print(start_dt_tm, end_dt_tm)
+                                        break
                                 elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
                                     return
                                 else: 
@@ -625,6 +608,10 @@ def display_booking(intent):
                     resc = ' Appointment alreration process terminated.'
                     db.collection('Meessage').document('111111').update({'Message': resc})
                     return
+                else:
+                    resc = ' Sorry could not understand your input please try again, remember enter "yes" or "no"...'
+                    answer = tags(resc).lower()
+
 
         ####################################################################################cancel#################################################################################  
     elif intent.lower() == 'cancel':
@@ -871,82 +858,6 @@ def display_booking(intent):
             #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
             return
 
-def timeDate(starttime,endtime):
-    #UPATED SHOULD HAVE THIS CODE.....
-    from datetime import datetime,timedelta
-    #getting the date for time option
-    date = starttime.split(' ')
-    date = date[0] 
-    #getting the time for date option
-    starttime = starttime.split(' ')
-    endtime = endtime.split(' ')
-    slots = starttime[1] + '-' + endtime[1]
-
-    response = ' What would you like to change: \n\n\t\tTo change the time please enter "time" or "t"\n\t\tTo change the date please enter "date" or "d"\n\t\tTo change both the date and time please enter "all" or "both"'
-    ints = tags(response)
-    while True:
-        if ints == 'time' or ints == 't' or ints == 'clock' :
-            #user wants to change or enter a time slot
-            response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
-            timeslot = tags(response)
-            while True:
-                try:
-                    # timeslot = datetime.strptime(timeslot, '%H:%M')
-                    # end = timeslot + timedelta(minutes=30)
-                    # timeslot = timeslot.strftime('%H:%M') + '-' + end
-                    slots = timeSlots(timeslot, date)
-                    start_tm_dt = slots[0]
-                    end_tm_dt = slots[1]
-                    return [start_tm_dt, end_tm_dt]
-                except ValueError:
-                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                    timeslot = tags(response)
-
-        elif ints == 'date' or ints == 'day' or ints == 'd':
-            #user enters date and time slot
-            response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
-            date =tags(response)
-            while True:
-                try:
-                    date = datetime.strptime(date, '%Y-%m-%d')
-                    date = date.strftime('%Y-%m-%d')
-                    slots = timeSlots(slots, date)
-                    start_tm_dt = slots[0]
-                    end_tm_dt = slots[1]
-                    return [start_tm_dt, end_tm_dt]
-                except ValueError:
-                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                    date = tags(response)          
-        elif ints == 'all' or ints == 'date and time' or ints == 'date time' or ints == 'both':
-            #changes all 3
-            response = ' Please enter a date youd like to book for, in the following format: YYYY-MM-DD, for example 2022-05-24'
-            dates =tags(response)
-            while True:
-                try:
-                    date = datetime.strptime(dates, '%Y-%m-%d')
-                    date = date.strftime('%Y-%m-%d')
-                    break
-                except ValueError:
-                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                    date = tags(response)
-            ###################Slots incomplete even above
-            response = ' Please enter the timeslot you want!\n In the following format: HH:MM-HH:MM (e.g. \t14:00-14:30)'
-            timeslot = tags(response)
-            while True:
-                try:
-                    # date = datetime.strptime(dates, '%Y-%m-%d')
-                    # date = date.strftime('%Y-%m-%d')
-                    slots = timeSlots(timeslot, date)
-                    start_tm_dt = slots[0]
-                    end_tm_dt = slots[1]
-                    return [start_tm_dt, end_tm_dt]
-                except ValueError:
-                    response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                    date = tags(response)
-        else:
-            response = ' Sorry seems you have entered an incorrect value please try again...'
-            ints = tags(response)
-
 def doc_status(docNum, start,end):
     workDay = db.collection('Operational_Days').where('Doctor_ID','==',docNum).where('operational_type','==','working').get()
     # the where with doc id is useless for any available doctor
@@ -969,14 +880,6 @@ def doc_status(docNum, start,end):
                     return 'free'
         else:
                 return 'unavailable'
-
-def timeSlots(times,date):
-	    #hve ti make a code that just adds 30 minutes
-        slots = []
-        slots = times.split('-')
-        start_dt_tm = date + ' ' + slots[0]
-        end_dt_tm = date + ' ' + slots[1]
-        return [start_dt_tm,end_dt_tm]
 
 def all_available(start, end):
     print('all avail start here')
@@ -1070,22 +973,9 @@ def Booking():
     db = firestore.client()
     ###################################################Date
     resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\n'
-    resp = resp + ' What date would you like to book for?\nEnter the date in the following format: YYYY-MM-DD, for example 2022-05-24'
-    date = tags(resp) 
-    while True:
-            try:
-                date = datetime.strptime(date, '%Y-%m-%d')
-                date = date.strftime('%Y-%m-%d')
-                break
-            except ValueError:
-                response = ' Sorry you entered an invalid please try again remeber, enter date in the following format: Year-month-day(2022-05-29)'
-                date = tags(response)
-    print(date)  
-    ################################################TimeSlots######################################
-    resp =' Please enter a time slots you would like? in the following format '
-    slot = tags(resp)
-    print(slot)
-    slots = timeSlots(slot, date)
+    resp = resp + ' What date would you like to book for?\nTo enter a date and time slot please press the buttom above writen "Pick Date"...'
+    dates = tags(resp)
+    slots = selectDT(dates)
     start_dt_tm = slots[0]
     end_dt_tm = slots[1]
     print(start_dt_tm, end_dt_tm)
@@ -1109,10 +999,12 @@ def Booking():
                             answer = tags(resp).lower()
                             while True:
                                 if answer == 'yes' or  answer == 'y' or  answer == 'continue' or  answer == 'proceed':
-                                    slot = timeDate(start_dt_tm,end_dt_tm)
-                                    slots = timeSlots(slot, date)
+                                    resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                                    dates = tags(resp)
+                                    slots = selectDT(dates)
                                     start_dt_tm = slots[0]
                                     end_dt_tm = slots[1]
+                                    print(start_dt_tm, end_dt_tm)
                                     break
                                 elif  answer == 'no' or  answer == 'n' or  answer == 'terminate' or  answer == 'cancel':
                                     resp = ' looks like you chose to cancel the process...'
@@ -1123,82 +1015,49 @@ def Booking():
                                     answer = tags(resp)
                         else:
                             break
-
-                    status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
-                    if status == 'booked':
-                        resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
-                        answer = tags(resp).lower()
-                        while True:
-                            if answer == 'yes' or  answer == 'y':
-                                slots = timeDate(start_dt_tm,end_dt_tm)
-                                start_dt_tm = slots[0]
-                                end_dt_tm = slots[1]
-                                print(start_dt_tm, end_dt_tm)
-                            elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                                return
-                            else: 
-                                resp = ' Could not understand your input please try again, remember use yes or no'
-                                answer = tags(resp).lower()
-
-                    elif status == 'unavailabe':
-                        resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
-                        answer = tags(resp).lower()
-                        while True:
-                            if answer == 'yes' or  answer == 'y':
-                                slots = timeDate(start_dt_tm,end_dt_tm)
-                                start_dt_tm = slots[0]
-                                end_dt_tm = slots[1]
-                            elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                                resp = ' You choose to terminate..'
-                                db.collection('Meessage').document('111111').update({'Message': resp})
-                                return
-                            else: 
-                                resp = ' Could not understand your input please try again, remember use yes or no'
-                                answer = tags(resp).lower()
-                    else:
-                        user = db.collection('users').where('IdNumber','==',client_ID).get()
-                        for doc in user:
-                            pName = u'{}'.format(doc.to_dict()['Name'])
-                            pSurname = u'{}'.format(doc.to_dict()['Surname'])
-                        Dr = db.collection('Doctors').where(u'PracticeNumber',u'==',prac_num).get()
-                        for do in Dr:
-                            pDoctorI = u'{}'.format(do.to_dict()['Initials'])
-                            pDoctorS = u'{}'.format(do.to_dict()['Surname'])
-                            pDoctorSp = u'{}'.format(do.to_dict()['Specialization'])
-
-                        resp = 'Please confrirm your booking to me.\n\t\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\t\tAppointment ends: ' + str(end_dt_tm) + '\nPlease enter "Yes" to accept this booking or "No" to cancel booking process'
-                        confrim_appnt = tags(resp)
-                        while True:
-                            if confrim_appnt.lower()== 'yes' or confrim_appnt.lower() == 'continue' or confrim_appnt.lower() == 'y':
-                                random_id = ''.join([str(random.randint(0, 999)).zfill(3) for _ in range(2)])
-
-                                #Database add a booking into the database,Doctor_ID = prac_num, End_date = end_dt_tm, Start_date = start_dt_tm, patient_ID = client_ID
-                                sub = pSurname[0:3]
-                                sub2 = pName[0:1]
-                                booking_id = sub + random_id + sub2 #Fetch the booking id created from the appointment created above using the client Id
-                                # #add user to db
-                                user_doc_ref = db.collection('Appointments').document(booking_id)
-                                user_doc_ref.set({
-                                    u'Booking_ID' : booking_id,
-                                    u'Doctor_Pract_Number': prac_num,
-                                    u'Patient_ID': client_ID, 
-                                    u'Start_date': start_dt_tm,
-                                    u'End_date' : end_dt_tm,
-                                    })
-                                resp = ' You have the following appointment:'+ '\n\t\t\tBooking Number: '+ str(booking_id)+'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nSee you then ): '
-                                #break out of the function
-                                db.collection('Meessage').document('111111').update({'Message': resp})
-                                time_loop()
-                                #timeloop oesnt do the right thing try sleep or just return like now
-                                return
-                            elif confrim_appnt.lower()== 'no' or confrim_appnt.lower() == 'cancel' or confrim_appnt.lower() == 'stop' or confrim_appnt.lower() == 'n':
-                                mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
-                                db.collection('Meessage').document('111111').update({'Message': mo})
-                                return
-                            else: 
-                                mo = 'Invalid input please try again, \n\tYes or No'
-                                confrim_appnt =  tags(mo).lower()
-                
+                    while True:
+                        status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
+                        if status == 'booked':
+                            resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                            answer = tags(resp).lower()
+                            while True:
+                                if answer == 'yes' or  answer == 'y':
+                                    resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                                    dates = tags(resp)
+                                    slots = selectDT(dates)
+                                    start_dt_tm = slots[0]
+                                    end_dt_tm = slots[1]
+                                    print(start_dt_tm, end_dt_tm)
+                                    break 
+                                elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                                    return
+                                else: 
+                                    resp = ' Could not understand your input please try again, remember use yes or no'
+                                    answer = tags(resp).lower()
+                            break
+                        elif status == 'unavailabe':
+                            resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                            answer = tags(resp).lower()
+                            while True:
+                                if answer == 'yes' or  answer == 'y':
+                                    resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                                    dates = tags(resp)
+                                    slots = selectDT(dates)
+                                    start_dt_tm = slots[0]
+                                    end_dt_tm = slots[1]
+                                    print(start_dt_tm, end_dt_tm)
+                                    break
+                                elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                                    resp = ' You choose to terminate..'
+                                    db.collection('Meessage').document('111111').update({'Message': resp})
+                                    return
+                                else: 
+                                    resp = ' Could not understand your input please try again, remember use yes or no'
+                                    answer = tags(resp).lower()
+                        else:
+                            break
+                    break
+                    
                 elif pick == 'a' or pick == 'another location' or pick == 'new location' or pick == 'new' or pick == 'pick location':
                     #locatios difference
                     resp = ' Please enter the Province youd like to book at'
@@ -1210,35 +1069,45 @@ def Booking():
 
         elif dec.lower() == 's' or dec.lower() == 'specific': 
             prac_num = find_doc()
-            status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
-            if status == 'booked':
-                resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
-                answer = tags(resp).lower()
-                while True:
-                    if answer == 'yes' or  answer == 'y':
-                        slots = timeDate(start_dt_tm,end_dt_tm)
-                        start_dt_tm = slots[0]
-                        end_dt_tm = slots[1]
-                        print(start_dt_tm, end_dt_tm)
-                    elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                        return
-                    else: 
-                        resp = ' Could not understand your input please try again, remember use yes or no'
-                        answer = tags(resp).lower()
+            while True:
+                status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
+                if status == 'booked':
+                    resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                    answer = tags(resp).lower()
+                    while True:
+                        if answer == 'yes' or  answer == 'y':
+                            resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            dates = tags(resp)
+                            slots = selectDT(dates)
+                            start_dt_tm = slots[0]
+                            end_dt_tm = slots[1]
+                            print(start_dt_tm, end_dt_tm)
+                            break
+                        elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                            return
+                        else: 
+                            resp = ' Could not understand your input please try again, remember use yes or no'
+                            answer = tags(resp).lower()
 
-            elif status == 'unavailabe':
-                resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
-                answer = tags(resp).lower()
-                while True:
-                    if answer == 'yes' or  answer == 'y':
-                        timeDate
-                    elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                        return
-                    else: 
-                        resp = ' Could not understand your input please try again, remember use yes or no'
-                        answer = tags(resp).lower()
-            else:
-                break
+                elif status == 'unavailabe':
+                    resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                    answer = tags(resp).lower()
+                    while True:
+                        if answer == 'yes' or  answer == 'y' or answer == 'continue' or answer == 'proceed':
+                            resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            dates = tags(resp)
+                            slots = selectDT(dates)
+                            start_dt_tm = slots[0]
+                            end_dt_tm = slots[1]
+                            break
+                        elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
+                            return
+                        else: 
+                            resp = ' Could not understand your input please try again, remember use yes or no'
+                            answer = tags(resp).lower()
+                else:
+                    break
+            break
         else:
             resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
             dec = tags(resp)
@@ -1286,6 +1155,41 @@ def Booking():
             mo = 'Invalid input please try again, \n\tYes or No'
             confrim_appnt =  tags(mo).lower()
  
+def selectDT(dates):
+    import datetime
+    from datetime import datetime, timedelta
+
+    months={
+        "January": "01", 
+        "February": "02",
+        "March": "03",
+        "April": "04",
+        "May": "05",
+        "June":"06",
+        "July": "07",
+        "August": "08",
+        "September": "09",
+        "October":"10",
+        "November": "11",
+        "December": "12"
+        
+        }
+
+    dates = dates.split(' ')
+    mon = months[dates[1]]
+    date = str(dates[2]) + '-' + str(mon) + '-' + str(dates[0])
+
+    #time
+
+    times = date + ' ' + dates[4]
+    times = times[:-3]
+
+    start_dt_tm = datetime.strptime(times, '%Y-%m-%d %H:%M')
+    end_dt_tm = start_dt_tm + timedelta(minutes=30)
+    start_dt_tm = str(start_dt_tm)[:-3]
+    end_dt_tm = str(end_dt_tm)[:-3]
+    return [start_dt_tm, end_dt_tm]
+
 def selenium():
     from selenium import webdriver
     from selenium.webdriver.common.keys import Keys
