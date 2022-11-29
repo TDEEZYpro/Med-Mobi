@@ -1253,6 +1253,7 @@ def selenium():
             articles = main.find_elements(By.TAG_NAME,"article")
             return articles
 
+
         def get_info(arti):
             #prints all content on that page
             for article in arti:
