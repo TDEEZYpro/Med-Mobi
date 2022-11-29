@@ -1252,7 +1252,7 @@ def selenium():
             #finds the html or css that contains the content
             articles = main.find_elements(By.TAG_NAME,"article")
             return articles
-
+ #sdfgsadfsafasdf
 
         def get_info(arti):
             #prints all content on that page
