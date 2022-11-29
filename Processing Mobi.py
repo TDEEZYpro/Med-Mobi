@@ -464,18 +464,10 @@ def display_booking(intent):
                                     resp = ' Could not understand your input please try again, remember use yes or no'
                                     answer = tags(resp).lower()
                         else:
-                            #creating the booking id
-##NATHI FIX NATHI FIX NATHI FIX if we are rescheduling then why are we changing booking ids then that means wed need to delete the old booking just update the values and keep the booking id
-                            random_id = ''.join([str(random.randint(0, 999)).zfill(3) for _ in range(2)])
-                            sub = pSurname[0:3]
-                            sub2 = pName[0:1]
-                            #THE BOOKING ID in this if statement is Appointments just update the other value
-                            booking_id = sub + random_id + sub2
+                            #update the booking
+                            booking_id = Appointments
                             user_doc_ref = db.collection('Appointments').document(booking_id)
-                            user_doc_ref.set({
-                                u'Booking_ID' : booking_id,
-                                u'Doctor_Pract_Number': pDoctorNum,
-                                u'Patient_ID': client_ID, 
+                            user_doc_ref.update({
                                 u'Start_date': start_dt_tm,
                                 u'End_date' : end_dt_tm,
                                 })
@@ -597,12 +589,15 @@ def display_booking(intent):
                                     answer = tags(resp).lower()
                         else:
                             #Then confirm rescheduling
-##############CONFIRM WITH Nathi if this is how you update the values cause either way only the date and time will change when rescheduling
-                            user_doc_ref = db.collection('Appointments').document(booking_id)
-                            user_doc_ref.set({
+                            user_doc_ref = db.collection('Appointments').document(book_id)
+                            user_doc_ref.update({
                                 u'Start_date': start_dt_tm,
                                 u'End_date' : end_dt_tm,
                                 })
+                            resc = ' You have rescheduled your appointment to the following details'+ '\n\t\t\tBooking Number: '+ str(booking_id)+'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\tAppointment ends: ' + str(end_dt_tm) + '\nSee you then ): '
+                            #break out of the function
+                            tags(resc)
+                            return
 
                 elif answer == 'no' or answer == 'n' or answer =='stop' or answer == 'cancel':
                     resc = ' Appointment alreration process terminated.'

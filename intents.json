@@ -1,7 +1,7 @@
 {
     "intents": [{
             "tag": "salutation",
-            "patterns": ["hi", "hey", "hello", "hii", "hola", "ekse", "hi there", "anyone there", "yo", "whats up", "i am good", "i'm", "is anyone there", "good morning", "good day"],
+            "patterns": ["hi","hy", "hey", "hello", "hii", "hola", "ekse", "hi there", "anyone there", "yo", "whats up", "i am good", "i'm", "is anyone there", "good morning", "good day"],
             "responses": ["Hey Stranger, what can i help you with?", "Good day, How can I help you", "Howzit, How can i assist you today?", "Hello you, How can I help?", "Hii you, How can I assist you today?", "Hey there, what would you like help with today?", "Whats up, How can i be of assistance to you?"]
         },
         {
