@@ -785,9 +785,8 @@ def display_booking(intent):
         if count == 0:
             print (str(Appointments) + ' plus '+ str(count))
             mo = ' Sorry looks like you do not have any upcoming appointment, either its way past due date or you didnt create an appointment.'
-            db.collection('Meessage').document('111111').update({'Message': mo})
-            time.sleep(2)
-            return
+            new = tags(mo)
+            return new
         elif count == 1:
               ###Fetch user informatioon
             print (str(Appointments) + ' plus '+ str(count))
@@ -818,12 +817,12 @@ def display_booking(intent):
 
             mo = mo + ' You have an upcoming appointment, here are the details of this appointment: \n\t\t\tNumber'+ counter+'\n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) + '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm)
 
-            new = tags(mo)
-            return new
+            db.collection('Meessage').document('111111').update({'Message': mo})
+            return
         elif count > 1:
             print (str(Appointments) + ' plus '+ str(count))
-            mo = 'Here are your upcoming appointments:  \nYou have an upcoming appointment, here are the details of this appointment: '
-            #Dislay out of line mybe use SLEEP.time
+            mo = mo +'Here are your upcoming appointments:  \nYou have an upcoming appointment, here are the details of this appointment: '
+            #Dislay 
             user = db.collection('users').where('IdNumber','==',client_ID).get()
             for doc in user:
                 pName = u'{}'.format(doc.to_dict()['Name'])
@@ -849,7 +848,6 @@ def display_booking(intent):
            
             mo = mo + 'Here are all your bookings hope to see you soon...'
             db.collection('Meessage').document('111111').update({'Message': mo})
-            data()
             #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
             return
 
@@ -1153,36 +1151,18 @@ def Booking():
 def selectDT(dates):
     import datetime
     from datetime import datetime, timedelta
-
-    months={
-        "January": "01", 
-        "February": "02",
-        "March": "03",
-        "April": "04",
-        "May": "05",
-        "June":"06",
-        "July": "07",
-        "August": "08",
-        "September": "09",
-        "October":"10",
-        "November": "11",
-        "December": "12"
-        
-        }
-
-    dates = dates.split(' ')
-    mon = months[dates[1]]
-    date = str(dates[2]) + '-' + str(mon) + '-' + str(dates[0])
-
-    #time
-
-    times = date + ' ' + dates[4]
-    times = times[:-3]
-
-    start_dt_tm = datetime.strptime(times, '%Y-%m-%d %H:%M')
-    end_dt_tm = start_dt_tm + timedelta(minutes=30)
-    start_dt_tm = str(start_dt_tm)[:-3]
-    end_dt_tm = str(end_dt_tm)[:-3]
+    dates = dates.split('+')
+    print('new date is ' + str(dates))
+    print('the date received is ' + str(dates))
+    start_dt_tm = str(dates[0])
+    print ('lets go ' + start_dt_tm)
+    start_dt_tm = start_dt_tm[:-3] 
+    print('the start is ' + start_dt_tm)
+    end_dt_tm = datetime.strptime(start_dt_tm, '%Y-%m-%d %H:%M') + timedelta(minutes=30)
+    end_dt_tm = str(end_dt_tm)
+    end_dt_tm = end_dt_tm[:-3]
+    print('start is ' + start_dt_tm + ' end is ' + end_dt_tm)
+    
     return [start_dt_tm, end_dt_tm]
 
 def selenium():
@@ -1247,8 +1227,6 @@ def selenium():
             #finds the html or css that contains the content
             articles = main.find_elements(By.TAG_NAME,"article")
             return articles
- #sdfgsadfsafasdf
-
         def get_info(arti):
             #prints all content on that page
             for article in arti:
@@ -1339,9 +1317,14 @@ print('started')
 
 #########This while loop need to be a function
 while True:
-    
         #print('Mo: ' + chatbot_response(input('You: ') ))
         #fetch from react native
+
+        #tag = tags()
+        # if tag == 'salutation' or  tag == 'booking' or  tag == 'reschedule' or tag == 'cancel' or tag == 'checking' or tag == 'medical':
+        #     tags()
+        # else:
+        #     data()
         data()
 
         
