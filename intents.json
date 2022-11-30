@@ -1,37 +1,42 @@
 {
     "intents": [{
             "tag": "salutation",
-            "patterns": ["Hi", "Hey", "Hello", "Hii", "Hola", "Ekse", "Hi there", "Anyone there", "Yo", "Whats up", "I am", "I'm", "Is anyone there", "Good morning", "Good day"],
+            "patterns": ["hi","hy", "hey", "hello", "hii", "hola", "ekse", "hi there", "anyone there", "yo", "whats up", "i am good", "i'm", "is anyone there", "good morning", "good day"],
             "responses": ["Hey Stranger, what can i help you with?", "Good day, How can I help you", "Howzit, How can i assist you today?", "Hello you, How can I help?", "Hii you, How can I assist you today?", "Hey there, what would you like help with today?", "Whats up, How can i be of assistance to you?"]
         },
         {
             "tag": "goodbye",
-            "patterns": ["Bye", "See you later", "Goodbye", "Nice chatting to you, bye", "Till next time"],
+            "patterns": ["bye", "see you later", "goodbye", "good-bye", "nice chatting to you, bye", "good-bye","till next time"],
             "responses": ["See you!", "Have a nice day", "Bye! Come back again soon."]
         },
         {
+            "tag": "convisation",
+            "patterns": ["how are you","are you okay", "are you well","are you good", "you good","are you fine","i am good and how are you", "are you okay"],
+            "responses": [" Hey I'm well but I could be better if I knew how could I help you.", " I'm well but I'd like to know how i can help you", "I'm doing fine but how can I help you."]
+        },
+        {
             "tag": "name",
-            "patterns": ["What is your name", "whats your name", "Tell me your name", "who are you", "Tell me about yourself", "Tell me about you", "whats this", "Who is this","what is this app about"],
+            "patterns": ["what is your name", "whats your name", "tell me your name", "who are you", "tell me about yourself", "tell me about you", "whats this", "Who is this","what is this app about"],
             "responses": ["My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel an reschedule you appointments with any doctor in our database and give you some infotmation about todays disease, but my friends just call me Mo!", "My name is Med-Mo, the mobile medical appointment chatbot, i can book, cancel, reschedule appointments and provide some medical information as well", "I'm Med-Mo the appointment chatbot, I handle everything around appointments and supply additional medical information"]
         },
         {
             "tag": "noanswer",
-            "patterns": [],
+            "patterns": [""],
             "responses": ["Anyone there...", "Please giver me more information", "Not sure i understand", "I'm still here", "I'm still here are you?", "Do still require more assistance"]
         },
         {
             "tag": "options",
-            "patterns": ["What do you do", "How can you help", "what do you do", "What is your purpose", "What do you know", "Whats your job", "How do you work"],
+            "patterns": ["what do you do", "how can you help", "what do you do", "what is your purpose", "what do you know", "whats your job", "how do you work", "how does this app work", "how do you work", "what is the function of this app", "what do you do"],
             "responses": ["I can: \n\t1. Book you an appointment with any available doctor or prefered doctor in our system. \n\t2. I cancel appointments. \n\t3. I can reschedule appointments. \n\tDisplay all upcoming bookings. \n\t5. I can tell you information about disease and viruse and their common causes treatment and definition."]
         },
         {
             "tag": "thanks",
-            "patterns": ["Thanks", "Thank you", "That's helpful", "Awesome, thanks", "Thanks for helping me"],
+            "patterns": ["thanks", "thank you", "that's helpful", "awesome, thanks", "thanks for helping me", "dankie"],
             "responses": ["Happy to help!", "Any time!", "My pleasure", "You're welcome!"]
         },
         {
             "tag": "booking",
-            "patterns": ["book appointment", "book consultation", "I want to book", "I want to book a appointment", "I want to book an appointment", "When can i see a doctor", "When can i see a specialist", "When is the doctor free", "Is the a doctor available", "I need a doctor", "Is the doctor free", "I want to see a doctor", "Is the a slot free", "can you put me down with a doctor", "Im sick", "I'd like an appointment", "I want to create an appointment"],
+            "patterns": ["book", "booking","book appointment", "book consultation", "i want to book", "i want to book a appointment", "i want to book an appointment", "when can i see a doctor", "when can i see a specialist", "when is the doctor free", "is the a doctor available", "I need a doctor", "is the doctor free", "i want to see a doctor", "is the a slot free", "can you put me down with a doctor", "im sick", "i'd like an appointment", "i want to create an appointment"],
             "responses": []
         },
         {
@@ -46,18 +51,18 @@
         },
         {
             "tag": "checking",
-            "patterns": ["display", "show me my appointment", "show", "i want to see my appointment", "display appointments", "show appointments", "when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "I want to call off my appointment", "I want to revoke my appointment"],
+            "patterns": ["Display", "display", "", "display my appointment", "show me my appointment", "show", "i want to see my appointment", "display appointments", "show appointments", "when is my appointment", "do i have an appointment", "is the somwhere i need to be", "is the somwhere i should be", "dont i have an appointment", "i want to drop my appointment", "i want to call off my appointment", "i want to see my appointments", "i want to see my bookings"],
             "responses": []
         },
         {
             "tag": "medical",
-            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease", "information on", "what is this viruse"],
+            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease", "information on", "what is this viruse", "i want to know about", "what are the symptoms","what is th disease"],
             "responses": []
         },
         {
             "tag": "appointment",
             "patterns": ["appointment", "booking", "appoint", "session", "consultation", "arrangement"],
-            "responses": ["if you want to book, caance, reshcedule, or even display an appointment please be descriptive \n(e.g 'i want to book an appointment' or 'i want to cancel appointment' or 'i want to reschedule appointment' or 'i want to see my appointments)", "Please be more descriptive, do you want to 'cancel appointment' or 'book appointment' or 'reschedule appointment' or 'display/show appointments'"]
+            "responses": [" If you want to book, cancel, reshcedule, or even display an appointment please be descriptive \n(e.g) \n\t'I want to book an appointment' or \n\t'I want to cancel appointment' or '\n\tI want to reschedule appointment' or \n\t'I want to see my appointments...", "Please be more descriptive, do you want to: \n\t'cancel appointment' or \n\t'book appointment' or '\n\treschedule appointment' or \n\t'display/show appointments'"]
         }
     ]
 }
