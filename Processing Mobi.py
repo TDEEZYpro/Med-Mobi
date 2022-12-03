@@ -354,6 +354,7 @@ def find_doc():
                 prac_num = ''
                 break
 
+
 def display_booking(intent):
     #THE CLIENT ID IS FROM THE LOG IN PAGE imporrt from database
     db = firestore.client()
@@ -996,7 +997,7 @@ def Booking():
     db = firestore.client()
     ###################################################Date
     resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\n'
-    resp = resp + ' What date would you like to book for?\nTo enter a date and time slot please press the buttom above writen "Pick Date"...'
+    resp = resp + '\nWhat date would you like to book for?\nTo enter a date and time slot please press the buttom above writen "Pick Date"...'
     dates = tags(resp)
     slots = selectDT(dates)
     start_dt_tm = slots[0]
@@ -1195,112 +1196,149 @@ def selenium():
     from selenium.webdriver.common.by import By
     from selenium.webdriver.support.ui import WebDriverWait as WebD
     from selenium.webdriver.support import expected_conditions as EC
+    from selenium.common.exceptions import NoSuchElementException
+    from selenium.common.exceptions import StaleElementReferenceException
     from selenium.webdriver.chrome.options import Options
     import time
-    print('spopo function comes here edit it of course')
-    sel = ' Are you trying to enquire or get some information about common diseases and or viruse, if so enter "Yes" if not enter "No"'
-    answer = tags(sel).lower()     
-    if answer == 'yes' or answer == 'y' or answer =="continue":
-        print('continue to seleinuem function of spopo')
 
-        #headles browsing
-        def headless_window():
-            #install chromedriver or any driver that accommodates the browser that you are using
-            #put it in windows C in program files
-            PATH = "C:\Program Files (x86)\chromedriver.exe"
-            # instance of Options class allows
-            # us to configure Headless Chrome
-            options = Options()
+    #headles browsing
+    def headless_window():
+        #install chromedriver or any driver that accommodates the browser that you are using
+        #put it in windows C in program files
+        PATH = "C:\Program Files (x86)\chromedriver.exe"
+        # instance of Options class allows
+        # us to configure Headless Chrome
+        options = Options()
+            
+        # this parameter tells Chrome that
+        # it should be run without UI (Headless)
+        options.headless = True
+
+        # initializing webdriver for Chrome with our options
+        tDriver = webdriver.Chrome(PATH,options=options)
+        return tDriver
+
+    all_info=[]
+    
+    def search_results(driver, name):
+    
+        # getting a website
+        driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
+        #accessing the search bar in the website
+        search = driver.find_element(By.ID, 'edit-query-health-az')
+
+        #accepting cookies
+        cookie = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
+        time.sleep(1)
+        cookie.click()
+
+        #searching for a condition on the website
+        search.send_keys(name)
+        search.send_keys(Keys.RETURN)
+        time.sleep(10)
+
+
+        title =[]
+        symptoms = []
+        # getting the title
+        title =driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
+        symptoms = driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/div[1]/ul/li")
+        for i, s in zip(title, symptoms):
+            # try:
+
+            if(i.text == name):
+                # clicking a link
+                link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
+                time.sleep(1)
+                link.click()
+
+                wait = WebD(driver, 100)
+                #checks if there's content
+                main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+                #finds the html or css that contains the content
+                articles = main.find_elements(By.TAG_NAME,"article")
                 
-            # this parameter tells Chrome that
-            # it should be run without UI (Headless)
-            options.headless = True
+                for article in articles:
+                    #getting short description about the condition
+                    descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
+                    all_info.append(descrip.text)
 
-            # initializing webdriver for Chrome with our options
-            tDriver = webdriver.Chrome(PATH,options=options)
-            return tDriver
+                    #getting the list of symptoms
+                    symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
+                    all_info.append(symptom.text)
 
+                    symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
+                    all_info.append(symptoms.text)
+                    
+                    treatment = article.find_element(By.ID,"toc-2")
+                    all_info.append(treatment.text)
 
-        #array to hold all the content
-        all_videos_title = []
-
-
-        def getting_info(driver, name):
-            # getting a website
-            driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
-            #accessing the search bar in the website
-            search = driver.find_element(By.ID, 'edit-query-health-az')
-
-            #accepting cookies
-            acept = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
-            time.sleep(1)
-            acept.click()
-
-            #searching for a condition on the website
-            search.send_keys(name)
-            search.send_keys(Keys.RETURN)
-            # clicking a link
-            ele = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li[1]/h3/a")
-            time.sleep(1)
-            ele.click()
-
-
-            wait = WebD(driver, 100)
-            #checks if there's content
-            main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
-            #finds the html or css that contains the content
-            articles = main.find_elements(By.TAG_NAME,"article")
-            return articles
-        def get_info(arti):
-            #prints all content on that page
-            for article in arti:
-                dea = article.find_element(By.CSS_SELECTOR,"#main-article > h1")
-                all_videos_title.append(dea.text)
-                #getting short description about the condition
-                header = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
-                all_videos_title.append(header.text)
-
-                #getting the list of symptoms
-                sympMains = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
-                all_videos_title.append(sympMains.text)
-
-                symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
-                all_videos_title.append(symptoms.text)
+                    treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
+                    all_info.append(treat1.text)
+                    treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
+                    all_info.append(treat2.text)
+                    treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
+                    all_info.append(treat3.text)
+                for i in all_info:
+                    print(i)
+                return i
                 
-                treatment = article.find_element(By.ID,"toc-2")
-                all_videos_title.append(treatment.text)
+            elif(s.text == name.lower()):
+                # clicking a link
+                link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
+                time.sleep(1)
+                link.click()
 
-                treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
-                all_videos_title.append(treat1.text)
-                treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
-                all_videos_title.append(treat2.text)
-                treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
-                all_videos_title.append(treat3.text)
-            for i in all_videos_title:
-                print(i)
-                #Ithink this is where selenium prints in the terminal so
-                db.collection('Meessage').document('111111').update({'Message': i})
-                time_loop()
-            return
+                wait = WebD(driver, 100)
+                #checks if there's content
+                main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+                #finds the html or css that contains the content
+                articles = main.find_elements(By.TAG_NAME,"article")
 
+                for article in articles:
+                    heading = article.find_element(By.CSS_SELECTOR,"#main-article > h1")
+                    all_info.append(heading.text)
+                    #getting short description about the condition
+                    descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
+                    all_info.append(descrip.text)
 
-        sel = 'I can display to you information about a certain viruse, disease or infection you might want to know, like its symptoms and treatments, for me to do so: \nplease enter the either the virus/diseas name: or symptom or condition: '
-        searchNam = tags(sel)
+                    #getting the list of symptoms
+                    symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
+                    all_info.append(symptom.text)
 
-        if (len(searchNam) == 0):
-            #searchNam = input("enter condition or symptoms: ")
-            driver = headless_window()
-            articles = getting_info(driver, searchNam)
-            info = get_info(articles)
-        else:
-            driver = headless_window()
-            articles = getting_info(driver, searchNam)
-            info = get_info(articles)
-            return
-    elif answer == 'no' or answer == 'n' or answer =="cancel" or answer == 'stop':
-        sel = 'Okay, if the is anything else i can help you with please ask away, remember i can also book, cancel and reschedule appointments with any doctor in our system...'
-        #update databse and app
-        return
+                    symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
+                    all_info.append(symptoms.text)
+                    
+                    treatment = article.find_element(By.ID,"toc-2")
+                    all_info.append(treatment.text)
+
+                    treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
+                    all_info.append(treat1.text)
+                    treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
+                    all_info.append(treat2.text)
+                    treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
+                    all_info.append(treat3.text)
+                for i in all_info:
+                    print(i)
+                return i
+
+            elif (i.text != name):
+                tags("I'm sorry, that term is not available on this website")
+                print(i) 
+                break
+        
+    sel = "enter condition or symptoms: "
+    searchNam = tags(sel).capitalize()  
+
+    if (len(searchNam) == 0):
+        sel = "Sorry i didnt get that please try again..\nEnter condition: "
+        searchNam = tags(sel).capitalize()
+        driver = headless_window()
+        tags(articles = search_results(driver, searchNam))
+    
+    else:
+        driver = headless_window()
+        tags (articles = search_results(driver, searchNam))
 
 def data():
         db = firestore.client()
