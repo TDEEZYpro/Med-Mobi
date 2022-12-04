@@ -1,7 +1,7 @@
 {
     "intents": [{
             "tag": "salutation",
-            "patterns": ["hi","hy", "hey", "hello", "hii", "hola", "ekse", "hi there", "anyone there", "yo", "whats up", "i am good", "i'm", "is anyone there", "good morning", "good day"],
+            "patterns": ["hi","hy", "hey", "hello","hallo", "hii", "hola", "ekse", "hi there", "anyone there", "yo", "whats up", "i am good", "i'm", "is anyone there", "good morning", "good day"],
             "responses": ["Hey Stranger, what can i help you with?", "Good day, How can I help you", "Howzit, How can i assist you today?", "Hello you, How can I help?", "Hii you, How can I assist you today?", "Hey there, what would you like help with today?", "Whats up, How can i be of assistance to you?"]
         },
         {
@@ -22,7 +22,7 @@
         {
             "tag": "noanswer",
             "patterns": [""],
-            "responses": ["Anyone there...", "Please giver me more information", "Not sure i understand", "I'm still here", "I'm still here are you?", "Do still require more assistance"]
+            "responses": ["I'm still here..."]
         },
         {
             "tag": "options",
@@ -56,7 +56,7 @@
         },
         {
             "tag": "medical",
-            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease", "information on", "what is this viruse", "i want to know about", "what are the symptoms","what is th disease"],
+            "patterns": ["symptoms", "symptom", "causes", "treatment", "virus", "disease", "information on", "what is this viruse", "i want to know about", "what are the symptoms","what is th disease","flue","covid","covid19","covid-19","influenza","chicken pox", "monkey pox","asthma","Coronaviruses","fever", "ebola","eczema","Hepatitis"],
             "responses": []
         },
         {

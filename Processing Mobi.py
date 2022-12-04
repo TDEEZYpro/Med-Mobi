@@ -154,12 +154,13 @@ def getResponse(ints, intents_json):
             ####################Any other tag######################################
         elif(i['tag']== tag):
             print ('default')
-            tags(result = random.choice(i['responses']))
+            result = random.choice(i['responses'])
             break
             ###################UNKOWN INTENT######################################
         else:
-            tags(result = "Sorry unrecognised intent, please ask the right questions or statement")
-    return
+            result = "Sorry unrecognised intent, please ask the right questions or statement"
+
+    return result
     
 def find_doc():
     print('find doctor')
@@ -370,8 +371,6 @@ def display_booking(intent):
 
 
         resc = ' Please be informed you are entering the process of altering details of an existing booking, this means after making this change your old booking will no longer exist...\nPlease hold on while I fetch all bookings that can be altered.\nThe only bookings that can be altered are bookings no later than yesterday ('+ str(yesterday) + ')'
-        db.collection('Meessage').document('111111').update({'Message': resc})
-        time.sleep(2)
         #fetch all bookings whereby start_date_time is of the appointment >= today
         #store all in appointment[]
     
@@ -381,21 +380,19 @@ def display_booking(intent):
         else:
             count = len(Appointments.split())
 
-        userID = db.collection('Appointments').where('Patient_ID','==',client_ID).get()
+        userID = db.collection('Appointments').where('Patient_ID','==',client_ID).where('Start_date','>=',yesterday).get()
         for doc in userID:
-            newID = userID.where('Start_date','>=',yesterday).get()
-        for doc in newID:
             Appointments = u'{}'.format(doc.to_dict()['Booking_ID'])
         count = len(Appointments.split())
 
 
         if count == 0:
-            resc = ' Oops sorry seems like there are no available bookings for you to alter, if your booking is older than yesterday then booking has already been removed from the system please try booking a new appointment...'
+            resc = resc + ' Oops sorry seems like there are no available bookings for you to alter, if your booking is older than yesterday then booking has already been removed from the system please try booking a new appointment...'
             db.collection('Meessage').document('111111').update({'Message':resc})
             time_loop()
             return
         elif count == 1:
-            resc = ' Looks like you only have one appointment which you can alter, here are the details:\n'
+            resc = resc +' \n\nLooks like you only have one appointment which you can alter, here are the details:\n'
             # #display the booking
             # #GET bookingid then
             # db.collection('Meessage').document('111111').update({'Message':resc})
@@ -429,6 +426,7 @@ def display_booking(intent):
                 if answer == 'yes' or answer == 'y' or answer =='confirm' or answer == 'continue':
                     resc = ' To make any alteration of your appointments date or time please press the button above written "Pick Date" and change either the date or the time or both...'
                     dates = tags(resc)
+                    print('date in funtion ', dates)
                     slots = selectDT(dates)
                     start_dt_tm = slots[0]
                     end_dt_tm = slots[1]
@@ -891,14 +889,14 @@ def all_available(start, end):
     getLoc = loc.geocode(userloc)
     
     while True:
-        if getLoc ==None:
+        if getLoc !=None:
             resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
             answer = tags(resp).lower()
             if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
                 break
             elif answer == 'no' or answer == 'n' or answer == 'it is not' or 'no its not':
                 resp = ' okay lets try get the location. Please enter the location/address at which you are looking for a doctor in: '
-                userloc = tags(resp).lower()
+                userloc = tags(resp).lower()              
                 getLoc = loc.geocode(userloc)
         else:
             resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
@@ -1016,7 +1014,7 @@ def Booking():
                 while True:
                     prac_num = all_available(start_dt_tm, end_dt_tm)
                     if bool(prac_num) == False:
-                        resp = ' Seems like we cant find a doctor at your specific time frames so would ypou like to alter the date, if so please enter "yes" or enter "no" or "cancel" to stop the whole process...'
+                        resp = ' I just tried finding a doctor available at the date and time you selected.\nSeems like we cant find a doctor at your specific time frames so would ypou like to alter the date, if so please enter "yes" or enter "no" or "cancel" to stop the whole process...'
                         answer = tags(resp).lower()
                         while True:
                             if answer == 'yes' or  answer == 'y' or  answer == 'continue' or  answer == 'proceed':
@@ -1176,6 +1174,7 @@ def Booking():
 def selectDT(dates):
     import datetime
     from datetime import datetime, timedelta
+    print(dates)
     dates = dates.split('+')
     # print('new date is ' + str(dates))
     # print('the date received is ' + str(dates))
