@@ -1394,13 +1394,41 @@ def data():
         return user_input
 
 def tags(mo):
-    db = firestore.client()
-    db.collection(u'Meessage').document('111111').update({'Message' : mo})
-    user_input= ''
-    time_loop()
-    bot_respon =  db.collection('Meessage').document('123457').get()
-    user_input= u'{}'.format(bot_respon.to_dict()['Message']) 
-    return user_input
+    import asyncio
+    import json
+    import websockets
+
+
+    async def handle_connection(websocket, path):
+    while True:
+        message = await websocket.recv()
+        data = json.loads(message)
+        
+        userInput = data['text']
+
+        #data from react native
+        print(userInput)
+
+        # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
+        message_id = data.get('id', 'unknown')
+
+        # Prepare the response message to send to react native
+        send = getResponse()
+
+        #sends data back to react native
+        response = {
+        'id': message_id,
+        'sender': 'Server',
+        'text':  send,
+        }
+        await websocket.send(json.dumps(response))
+        
+        
+
+    start_server = websockets.serve(handle_connection, '0.0.0.0', 8000)
+
+    asyncio.get_event_loop().run_until_complete(start_server)
+    asyncio.get_event_loop().run_forever()
 
 def time_loop():
     db.collection('Meessage').document('123457').update({'Message':""}) 
@@ -1419,16 +1447,16 @@ def time_loop():
 print('started')
 
 #########This while loop need to be a function
-while True:
-        #print('Mo: ' + chatbot_response(input('You: ') ))
-        #fetch from react native
+# while True:
+#         #print('Mo: ' + chatbot_response(input('You: ') ))
+#         #fetch from react native
 
-        #tag = tags()
-        # if tag == 'salutation' or  tag == 'booking' or  tag == 'reschedule' or tag == 'cancel' or tag == 'checking' or tag == 'medical':
-        #     tags()
-        # else:
-        #     data()
-        data()
-
-        
+#         #tag = tags()
+#         # if tag == 'salutation' or  tag == 'booking' or  tag == 'reschedule' or tag == 'cancel' or tag == 'checking' or tag == 'medical':
+#         #     tags()
+#         # else:
+#         #     data()
+#         data()
+tags()
+     
 
