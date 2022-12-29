@@ -884,110 +884,139 @@ def doc_status(docNum, start,end):
 
 def all_available(start, end):
     resp = ' Please enter your current location to get the nearest doctor, you can enter the location in the format "Province City Township" for example "Gauteng Johanessburg Soweto Orlando" or just "Soweto Orlando" \nAlternatively, enter the location you want to see a doctor at'
-    userloc = tags(resp).lower()
+    userloc = tags(resp)
     loc = Nominatim(user_agent="GetLoc")
+    
     getLoc = loc.geocode(userloc)
     
+    while getLoc ==None:
+        resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
+        userloc = tags(resp).lower()
+        getLoc = loc.geocode(userloc)
+   
+    print(getLoc.address)
+
+    resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
+    answer = tags(resp).lower()
     while True:
-        if getLoc !=None:
+        if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
+            workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
+            # the where with doc id is useless for any available doctor
+            counter = 1
+            #counter is for displaying doctor 
+
+            allDoctors=[]
+            distance = []
+            
+            for z in workDay:
+                dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
+                dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
+                docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
+                availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+                # print(docNum)
+                if start >= dat1 and end <= dat2:
+                    #if hes working on that day then we take hes practice number and then 
+                    for i in availDocDate:
+                        date1 = u'{}'.format(i.to_dict()['Start_date'])
+                        date2 = u'{}'.format(i.to_dict()['End_date'])
+                        # print('Start: ' +date1 + ' End ' + date2)
+                        if start != date1 and end != date2:
+        ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT 
+                            #read comment above
+                            Dr = db.collection('Doctors').where(u'PracticeNumber',u'==',i).get()
+                            for do in Dr:
+                                docLoc = u'{}'.format(do.to_dict()['Office_Location'])
+                            
+                            getDocLoc = loc.geocode(docLoc)
+                            dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
+                            check = docNum in allDoctors
+                            
+                            if check == False and dis <= 200:
+                                distance.append(dis)
+                                allDoctors.append(docNum)
+                                print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
+            print( len(allDoctors))
+            print(allDoctors)
+            #Checks if the are doctors available if not it breaks
+            if len(allDoctors) == 0:
+                    respo = ' Looks like the are no doctors available at the times you, would you like to change maybe the time and date if so please enter yes or enter cancel or no to stop the process.'
+                    respond = tags(respo)
+                    if respond.lower() == 'yes' or respond.lower() == 'y' or respond.lower() == 'proceed':
+                        Booking()
+                    elif respond.lower() == 'no' or respond.lower() == 'n':
+                        return
+                    
+            else:
+                respo =' Heres a list of doctors available: '
+                #sorted by distance between
+                for a in allDoctors:
+                    avDoc = db.collection("Doctors").where('PracticeNumber','==',a).get()
+                    for b in avDoc:
+                        Initial = u'{}'.format(b.to_dict()['Initials'])
+                        Surname = u'{}'.format(b.to_dict()['Surname'])
+                        Spech = u'{}'.format(b.to_dict()['Specialization'])
+                        loc = u'{}'.format(b.to_dict()['Office_Location'])
+                        # timeslot = u'{}'.format(b.to_dict()['End_date'])
+                        respo = respo + '\nNumber: ' + str(counter)+ '\nDoctor: Dr '+ str(Initial) + ' '+ str(Surname)+ '\nSpecialization: ' + str(Spech) + '\nOffice Location: ' + str(loc) + '\nRequested Time: '+ str(start)+ ' to '+ str(end) + '\nDistance to doctor: ' + str(distance[counter-1])
+                        counter+=1
+                
+                counter = counter-1
+                respo  = respo + ' Please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
+                print(respo)
+                #location shortest , prompt to display close to him/her or enter a provincee
+                #must return a practice number\
+                select = tags(respo)
+                
+                while True:
+                    x = select.isnumeric()
+                    if x == True and int(select) <= counter:
+                        prac_num = allDoctors[(int(select) -1)]
+                        print(prac_num)
+                        #if x is a number and value enter is not greater than the last value count was
+                        #display the doctor 
+                        avDoc = db.collection("Doctors").where('PracticeNumber','==',prac_num).get()
+                        for det in avDoc:
+                            Initial = u'{}'.format(det.to_dict()['Initials'])
+                            Surname = u'{}'.format(det.to_dict()['Surname'])
+                            Spech = u'{}'.format(det.to_dict()['Specialization'])
+                            loc = u'{}'.format(det.to_dict()['Office_Location'])
+                        respo = '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech + '\nOffice Location: ' + loc + '\nDistance From You: ' + str(dis) + '\nRequested Timeslot: ' + str(start) + ' Till ' + str(end)
+                        db.collection('Meessage').document('111111').update({'Message': respo})
+                        return prac_num
+                    elif select == 'cancel' or select == ' exit' or select == 'terminate':
+                        #breaks must call while function to return to main 
+                        respo = ' You have choosen to termanate the process you can start a new enquiry with your next input'
+                        db.collection('Meessage').document('111111').update({'Message': respo})
+                        return
+                    else:
+                        respo = ' Invalid entry please try again, please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
+                        select = tags(respo)
+        elif answer == 'no' or answer == 'n' or answer == 'it is not' or 'no its not':
+            resp = ' okay lets try get the location. Please enter the location/address at which you are looking for a doctor in: '
+            userloc = tags(resp).lower()              
+            getLoc = loc.geocode(userloc)
+            answer = tags(resp).lower()
             resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
             answer = tags(resp).lower()
-            if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
-                break
-            elif answer == 'no' or answer == 'n' or answer == 'it is not' or 'no its not':
-                resp = ' okay lets try get the location. Please enter the location/address at which you are looking for a doctor in: '
-                userloc = tags(resp).lower()              
-                getLoc = loc.geocode(userloc)
-        else:
-            resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
-            userloc = tags(resp).lower()
-            getLoc = loc.geocode(userloc)
-        
-    workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
-    # the where with doc id is useless for any available doctor
-    counter = 1
-    #counter is for displaying doctor 
 
-    allDoctors=[]
-    distance = []
-    for z in workDay:
-        dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
-        dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
-        docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
-        availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
-        # print(docNum)
-        if start >= dat1 and end <= dat2:
-            #if hes working on that day then we take hes practice number and then 
-            for i in availDocDate:
-                date1 = u'{}'.format(i.to_dict()['Start_date'])
-                date2 = u'{}'.format(i.to_dict()['End_date'])
-                # print('Start: ' +date1 + ' End ' + date2)
-                if start != date1 and end != date2:
-########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT 
-                    #read comment above
-                    Dr = db.collection('Doctors').where(u'PracticeNumber',u'==',prac_num).get()
-                    for do in Dr:
-                        docLoc = u'{}'.format(do.to_dict()['Office_Location'])
-                    getDocLoc = loc.geocode(docLoc)
-                    dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
-                    check = docNum in allDoctors
-                    if check == False and dis <= 200:
-                        distance.append(dis)
-                        allDoctors.append(docNum)
-                        print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
-    print( len(allDoctors))
-    print(allDoctors)
-    #Checks if the are doctors available if not it breaks
-    if len(allDoctors) == 0:
-            respo = ' Looks like the are no doctors available at the times you, would you like to change maybe the time and date if so please enter yes or enter cancel or no to stop the process.'
-            db.collection('Meessage').document('111111').update({'Message': respo})
-            return
-            
-    else:
-        respo =' Heres a list of doctors available: '
-        #sorted by distance between
-        for a in allDoctors:
-            avDoc = db.collection("Doctors").where('PracticeNumber','==',a).get()
-            for b in avDoc:
-                Initial = u'{}'.format(b.to_dict()['Initials'])
-                Surname = u'{}'.format(b.to_dict()['Surname'])
-                Spech = u'{}'.format(b.to_dict()['Specialization'])
-                loc = u'{}'.format(b.to_dict()['Office_Location'])
-                # timeslot = u'{}'.format(b.to_dict()['End_date'])
-                respo = respo + '\nNumber: ' + str(counter)+ '\nDoctor: Dr '+ str(Initial) + ' '+ str(Surname)+ '\nSpecialization: ' + str(Spech) + '\nOffice Location: ' + str(loc) + '\nRequested Time: '+ str(start)+ ' to '+ str(end) + '\nDistance to doctor: ' + str(distance[counter-1])
-                counter+=1
+
+    # while True:
+    #     if getLoc !=None:
+    #         resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
+    #         answer = tags(resp).lower()
+    #         if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
+    #             break
+    #         elif answer == 'no' or answer == 'n' or answer == 'it is not' or 'no its not':
+    #             resp = ' okay lets try get the location. Please enter the location/address at which you are looking for a doctor in: '
+    #             userloc = tags(resp).lower()              
+    #             getLoc = loc.geocode(userloc)
+    #     else:
+    #         resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
+    #         userloc = tags(resp).lower()
+    #         getLoc = loc.geocode(userloc)
+    #     break
         
-        counter = counter-1
-        respo  = respo + ' Please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
-        print(respo)
-        #location shortest , prompt to display close to him/her or enter a provincee
-        #must return a practice number\
-        select = tags(respo)
-        
-        while True:
-            x = select.isnumeric()
-            if x == True and int(select) <= counter:
-                prac_num = allDoctors[(int(select) -1)]
-                print(prac_num)
-                #if x is a number and value enter is not greater than the last value count was
-                #display the doctor 
-                avDoc = db.collection("Doctors").where('PracticeNumber','==',prac_num).get()
-                for det in avDoc:
-                    Initial = u'{}'.format(det.to_dict()['Initials'])
-                    Surname = u'{}'.format(det.to_dict()['Surname'])
-                    Spech = u'{}'.format(det.to_dict()['Specialization'])
-                    loc = u'{}'.format(det.to_dict()['Office_Location'])
-                respo = '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech + '\nOffice Location: ' + loc + '\nDistance From You: ' + str(dis) + '\nRequested Timeslot: ' + str(start) + ' Till ' + str(end)
-                db.collection('Meessage').document('111111').update({'Message': respo})
-                return prac_num
-            elif select == 'cancel' or select == ' exit' or select == 'terminate':
-                #breaks must call while function to return to main 
-                respo = ' You have choosen to termanate the process you can start a new enquiry with your next input'
-                db.collection('Meessage').document('111111').update({'Message': respo})
-                return
-            else:
-                respo = ' Invalid entry please try again, please enter the number(1 or 2 or 3...) of the doctor you would like to pick.'
-                select = tags(respo)
+
 
 def Booking():
     from datetime import datetime
@@ -998,12 +1027,14 @@ def Booking():
     resp = resp + '\nWhat date would you like to book for?\nTo enter a date and time slot please press the buttom above writen "Pick Date"...'
     dates = tags(resp)
     slots = selectDT(dates)
+    dates =''
     start_dt_tm = slots[0]
     end_dt_tm = slots[1]
     print(start_dt_tm, end_dt_tm)
     ################################################Doctor################################
     resp = ' To see a doctor who is availbale at your selected date and time, and at a location you want please enter "a" or \nDo you have a specific doctor you would like to see whos in our system then enter "s"'
     dec = tags(resp)
+
     while True:
         if dec.lower() == 'a' or dec.lower() == 'available':
             ##############################################################################
@@ -1014,7 +1045,7 @@ def Booking():
                 while True:
                     prac_num = all_available(start_dt_tm, end_dt_tm)
                     if bool(prac_num) == False:
-                        resp = ' I just tried finding a doctor available at the date and time you selected.\nSeems like we cant find a doctor at your specific time frames so would ypou like to alter the date, if so please enter "yes" or enter "no" or "cancel" to stop the whole process...'
+                        resp = ' I just tried finding a doctor available at the date and time you selected.\nSeems like we cant find a doctor at your specific time frames so would you like to alter the date, if so please enter "yes" or enter "no" or "cancel" to stop the whole process...'
                         answer = tags(resp).lower()
                         while True:
                             if answer == 'yes' or  answer == 'y' or  answer == 'continue' or  answer == 'proceed':
@@ -1170,6 +1201,7 @@ def Booking():
         else: 
             mo = 'Invalid input please try again, \n\tYes or No'
             confrim_appnt =  tags(mo).lower()
+        
  
 def selectDT(dates):
     import datetime
@@ -1234,10 +1266,13 @@ def selenium():
         #searching for a condition on the website
         search.send_keys(name)
         search.send_keys(Keys.RETURN)
-        time.sleep(10)
+        time.sleep(2)
 
 
         title =[]
+        new=''
+        new1=''
+        new2=''
         symptoms = []
         # getting the title
         title =driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
@@ -1279,7 +1314,9 @@ def selenium():
                     treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
                     all_info.append(treat3.text)
                 for i in all_info:
-                    print(i)
+                    print('done search')
+                    new = new + i
+                tags(new)
                 return i
                 
             elif(s.text == name.lower()):
@@ -1318,26 +1355,31 @@ def selenium():
                     treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
                     all_info.append(treat3.text)
                 for i in all_info:
-                    print(i)
+                    print('done search')
+                    new1 = new1 + i
+                tags(new1)
                 return i
 
             elif (i.text != name):
                 tags("I'm sorry, that term is not available on this website")
-                print(i) 
+                print('done search')
+                new2 = new2 + i
+                tags(new2) 
                 break
         
-    sel = "enter condition or symptoms: "
+    sel = "enter condition or symptoms:"
     searchNam = tags(sel).capitalize()  
-
+    sel = 'Please wait as I gather information...'
+    db.collection(u'Meessage').document('111111').update({'Message' : sel})
     if (len(searchNam) == 0):
         sel = "Sorry i didnt get that please try again..\nEnter condition: "
         searchNam = tags(sel).capitalize()
         driver = headless_window()
-        tags(articles = search_results(driver, searchNam))
+        articles = search_results(driver, searchNam)
     
     else:
         driver = headless_window()
-        tags (articles = search_results(driver, searchNam))
+        articles = search_results(driver, searchNam)
 
 def data():
         db = firestore.client()
