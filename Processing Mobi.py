@@ -1400,29 +1400,28 @@ def tags(mo):
 
 
     async def handle_connection(websocket, path):
-    while True:
-        message = await websocket.recv()
-        data = json.loads(message)
-        
-        userInput = data['text']
+        while True:
+            message = await websocket.recv()
+            data = json.loads(message)
+            
+            userInput = data['text']
 
-        #data from react native
-        print(userInput)
+            #data from react native
+            print(userInput)
 
-        # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
-        message_id = data.get('id', 'unknown')
+            # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
+            message_id = data.get('id', 'unknown')
 
-        # Prepare the response message to send to react native
-        send = getResponse()
-
-        #sends data back to react native
-        response = {
-        'id': message_id,
-        'sender': 'Server',
-        'text':  send,
-        }
-        await websocket.send(json.dumps(response))
-        
+            # Prepare the response message to send to react native
+            send = mo
+            #sends data back to react native
+            response = {
+            'id': message_id,
+            'sender': 'Server',
+            'text':  send,
+            }
+            await websocket.send(json.dumps(response))
+            
         
 
     start_server = websockets.serve(handle_connection, '0.0.0.0', 8000)
@@ -1457,6 +1456,41 @@ print('started')
 #         # else:
 #         #     data()
 #         data()
-tags()
-     
+#tags()
+import asyncio
+import json
+import websockets
+
+
+async def handle_connection(websocket, path):
+    while True:
+        message = await websocket.recv()
+        data = json.loads(message)
+        
+        userInput = data['text']
+
+        #data from react native
+        print(userInput)
+
+        # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
+        message_id = data.get('id', 'unknown')
+
+        # Prepare the response message to send to react native
+        send = chatbot_response(userInput)
+
+        #sends data back to react native
+        response = {
+        'id': message_id,
+        'sender': 'Server',
+        'text':  send,
+        }
+        await websocket.send(json.dumps(response))
+        
+    
+
+start_server = websockets.serve(handle_connection, '0.0.0.0', 8000)
+
+asyncio.get_event_loop().run_until_complete(start_server)
+asyncio.get_event_loop().run_forever()
+    
 
