@@ -1401,17 +1401,6 @@ def tags(mo):
 
     async def handle_connection(websocket, path):
         while True:
-            message = await websocket.recv()
-            data = json.loads(message)
-            
-            userInput = data['text']
-
-            #data from react native
-            print(userInput)
-
-            # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
-            message_id = data.get('id', 'unknown')
-
             # Prepare the response message to send to react native
             send = mo
             #sends data back to react native
@@ -1421,6 +1410,21 @@ def tags(mo):
             'text':  send,
             }
             await websocket.send(json.dumps(response))
+            # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
+            message_id = data.get('id', 'unknown')
+            
+            ############## will it wait and to take the answer or must we set it 
+            
+            message = await websocket.recv()
+            data = json.loads(message)
+            
+            userInput = data['text']
+
+            #data from react native
+            print(userInput)
+            return userInput
+
+            
             
         
 
@@ -1471,7 +1475,7 @@ async def handle_connection(websocket, path):
 
         #data from react native
         print(userInput)
-
+        
         # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
         message_id = data.get('id', 'unknown')
 
