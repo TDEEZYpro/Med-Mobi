@@ -1,5 +1,6 @@
-###3HVE TO RUN pip install geopy AND pip install haversine
-
+import asyncio
+import json
+import websockets
 import email
 import time
 from calendar import calendar
@@ -118,7 +119,7 @@ def chatbot_response(msg):
     msg = msg.lower()
     ints = predict_class(msg, model)
     res = getResponse(ints, intents)
-    print('Intents')
+    print(' from chatbot function' + f'{ints}')
     return res
 
 def getResponse(ints, intents_json):
@@ -167,8 +168,8 @@ def find_doc():
     # This function searchs for a specific doctor through, either by surname or name or name and surname or office email
     # then returns the doctors practice number when found for further use in booking
     db = firestore.client()
-    mo = ' The are 4 options:\nYou can search your doctor by name, or surname, or name and surname or office email\n'
-    mo = mo + 'To search your doctor by:\n\tName enter "n" \n\tSurname enter "s"\n\tInitials and Surname enter "c" \n\tOffice email enter "e"'
+    mo = ' The are 4 options:\nYou can search your doctor by Name, or Surname, or Name and Surname or Office Email\n'
+    mo = mo + 'To search your doctor by:\n\tName enter "N" \n\tSurname enter "C"\n\tInitials and Surname enter "C" \n\tOffice email enter "E"'
     prac_num =[]
     # if the orac num gives you erros i changed it from prac_num = ''
 
@@ -186,11 +187,11 @@ def find_doc():
                 numb = u'{}'.format(doc.to_dict()['PracticeNumber'])
                 prac_num.append(numb)
 
-                # print(prac_num)
+            # print(prac_num)
             #This all can be redudant if we display all the doctors the useer picks on and by picking one hes send the doctor name to us and we taking the practice number but
+
             if len(prac_num)>1:
-                
-                mo = ' Oooh seems like there are too many doctors who share that  Name.\nPlease pick the number of the exact doctor you want if '
+                mo = ' Oooh seems like there are too many doctors who share that name.\nPlease pick the number of the exact doctor you want if '
                 for num in prac_num:
                     doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
                     for doc in doctors:
@@ -209,20 +210,19 @@ def find_doc():
                     if x == True and int(select) <= counter:
                         prac_num = prac_num[(int(select) -1)]
                     elif select == 'cancel' or select == 'c' or select == 'terminate':
-                        mo = " Process of finding a doctor has been terminated..."
+                        mo = "\nProcess of finding a doctor has been terminated..."
                         db.collection('Meessage').document('111111').update({'Message': mo})
                         time_loop()
                         return
                     else:
-                        mo = ' Invalid input please try again...'
+                        mo = '\nInvalid input please try again...'
                         select = tags(mo)
                 #new prompt should have another field for more details
                 #more where functions
             elif len(prac_num.split())<1:
-                mo2 = ' Sorry seems like we couldnt find your specific doctor  please try again.'
+                mo2 = '\nSorry seems like I couldnt find your specific doctor  please try again.'
                 tags(mo2)
             else:
-
                 print(docInput + ' and ' + prac_num)
                 return prac_num
 
@@ -235,7 +235,7 @@ def find_doc():
                         numb = u'{}'.format(doc.to_dict()['PracticeNumber'])
                         prac_num.append(numb)
                 if len(prac_num)>1:
-                    mo2 = 'Oooh seems like there are too many doctors who share that Surname.\nPlease enter the number for the doctor you want'
+                    mo2 = '\nOooh seems like there are too many doctors who share that Surname.\nPlease enter the number for the doctor you want'
                     for num in prac_num:
                         doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
                         for doc in doctors:
@@ -254,17 +254,17 @@ def find_doc():
                         if x == True and int(select) <= counter:
                             prac_num = prac_num[(int(select) -1)]
                         else:
-                            mo = ' Invalid input please try again...'
+                            mo = '\nInvalid input please try again...'
                             select = tags(mo)
 
                 elif len(prac_num)<1:
-                    mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
+                    mo2 ='\nSorry seems like we couldnt find your specific doctor please try again.'
                     tags(mo2)
                 else:
                     return prac_num
 
         elif c_input.lower() == 'c' or c_input.lower() == 'initials' or c_input.lower() == 'initials and surname':
-            mo = ' Please enter the Initials AND Surname of the doctor you want to book. e.g) "MC Klopper" or "IR Mahlangu"...'
+            mo = '\nPlease enter the Initials AND Surname of the doctor you want to book. e.g) "MC Klopper" or "IR Mahlangu"...'
             docInput = docInput = tags(mo)
             docInput = docInput.split()
             initials = docInput[0]
@@ -276,7 +276,7 @@ def find_doc():
                     numb = u'{}'.format(doc.to_dict()['PracticeNumber'])
                     prac_num.append(numb)
             if len(prac_num)>1:
-                mo2 ='Oooh seems like there are too many doctors who share that Name and Surname.\nPlease pick the number of the doctor you want '
+                mo2 ='\nOooh seems like there are too many doctors who share that Name and Surname.\nPlease pick the number of the doctor you want '
                 for num in prac_num:
                     doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
                     for doc in doctors:
@@ -295,17 +295,17 @@ def find_doc():
                     if x == True and int(select) <= counter:
                         prac_num = prac_num[(int(select) -1)]
                     else:
-                        mo = ' Invalid input please try again...'
+                        mo = '\nInvalid input please try again...'
                         select = tags(mo)
 
             elif len(prac_num)<1:
-                mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
+                mo2 ='\nSorry seems like we couldnt find your specific doctor please try again.'
                 tags(mo2)
             else:
                 return prac_num
 
         elif c_input.lower() == 'e' or c_input.lower() == 'email' or c_input.lower() == 'office email' or c_input.lower() == 'office' or c_input.lower() == 'mail':
-            mo = ' Please enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...'
+            mo = '\nPlease enter the Office Email of the doctor you want to book. e.g) "xolanizulumedical@gmail.com" or "info@medicalhealth.co.za"...'
             docInput = tags(mo)
 
             docs = db.collection('Doctors').where("Email","==",docInput).get()
@@ -314,7 +314,7 @@ def find_doc():
                 prac_num.append(numb)
 
             if len(prac_num)>1:
-                mo2 ='Oooh seems like there are too many doctors who share that email.\nPlease enter the number of the doctor you want to pick...'
+                mo2 ='\nOooh seems like there are too many doctors who share that email.\nPlease enter the number of the doctor you want to pick...'
             
                 for num in prac_num:
                     doctors = db.collection('Doctors').where('PracticeNumber','==',num).get()
@@ -334,11 +334,11 @@ def find_doc():
                     if x == True and int(select) <= counter:
                         prac_num = prac_num[(int(select) -1)]
                     else:
-                        mo = ' Invalid input please try again...'
+                        mo = '\nInvalid input please try again...'
                         select = tags(mo)
 
             elif len(prac_num)<1:
-                mo2 =' Sorry seems like we couldnt find your specific doctor please try again.'
+                mo2 ='\nSorry seems like we couldnt find your specific doctor please try again.'
                 tags(mo2)
             else:
                 print(docInput + ' and ' + prac_num)
@@ -346,7 +346,7 @@ def find_doc():
 
         else: 
             #need to fix
-            mo2 ='Mo: Sorry you must have entered an incorrect input please try again or type "cancel" to end the process'
+            mo2 ='\nSorry you must have entered an incorrect input please try again or type "cancel" to end the process'
             value = tags(mo2)
             if value.lower() == 'cancel':
                 #cancel funntion?
@@ -354,7 +354,6 @@ def find_doc():
             else:
                 prac_num = ''
                 break
-
 
 def display_booking(intent):
     #THE CLIENT ID IS FROM THE LOG IN PAGE imporrt from database
@@ -783,18 +782,17 @@ def display_booking(intent):
             Appointments.append(u'{}'.format(doc.to_dict()['Booking_ID']))
 
 
-        if len(Appointments) == 0:
-            count = len(Appointments)
-        else:
-            count = len(Appointments)
 
-        print(Appointments,count)
+        count = len(Appointments)
+
+        print('The number of appoints is ' + f'{count}')
+        print(Appointments)
 
         if count == 0:
-            print (str(Appointments) + ' plus '+ str(count))
+            print ('It entered at 0 bookings' + str(Appointments) + ' plus '+ str(count))
             mo = ' Sorry looks like you do not have any upcoming appointment, either its way past due date or you didnt create an appointment.'
-            new = tags(mo)
-            return new
+            result = tags(mo)
+            return result
         elif count == 1:
               ###Fetch user informatioon
             print (str(Appointments) + ' plus '+ str(count))
@@ -824,12 +822,13 @@ def display_booking(intent):
             print(pDoctorI)
 
             mo = mo + ' You have an upcoming appointment, here are the details of this appointment: \n\t\t\tNumber'+ counter+'\n\t\t\tBooking Number: '+  str(app) +'\n\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) + '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\tAppointment ends: ' + str(end_dt_tm)
+            result = tags(mo)
+            return result
 
-            db.collection('Meessage').document('111111').update({'Message': mo})
-            return
         elif count > 1:
+
             print (str(Appointments) + ' plus '+ str(count))
-            mo = mo +'Here are your upcoming appointments:  \nYou have an upcoming appointment, here are the details of this appointment: '
+            mo = mo +'Here are the details of your upcoming appointments: '
             #Dislay 
             user = db.collection('users').where('IdNumber','==',client_ID).get()
             for doc in user:
@@ -855,9 +854,10 @@ def display_booking(intent):
                 counter = counter + 1
            
             mo = mo + 'Here are all your bookings hope to see you soon...'
-            db.collection('Meessage').document('111111').update({'Message': mo})
+           
             #NOTE !! I think (for app in appointments: db.collection('Meessage').document('111111').update({'Message': appointment[app]})
-            return
+            result = tags(mo)
+            return result
 
 def doc_status(docNum, start,end):
     workDay = db.collection('Operational_Days').where('Doctor_ID','==',docNum).where('operational_type','==','working').get()
@@ -886,7 +886,7 @@ def all_available(start, end):
     resp = ' Please enter your current location to get the nearest doctor, you can enter the location in the format "Province City Township" for example "Gauteng Johanessburg Soweto Orlando" or just "Soweto Orlando" \nAlternatively, enter the location you want to see a doctor at'
     userloc = tags(resp)
     loc = Nominatim(user_agent="GetLoc")
-    
+    loca = Nominatim(user_agent="GetDocLoc")
     getLoc = loc.geocode(userloc)
     
     while getLoc ==None:
@@ -896,7 +896,7 @@ def all_available(start, end):
    
     print(getLoc.address)
 
-    resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
+    resp = '\nPlease confirm, is this the location you were looking for: \n\n' + str(getLoc.address) + ' \n\nPlease enter "Yes" to confirm that it is the location or around that area or "No" to this is not the location you were looking for and you want to enter again:'
     answer = tags(resp).lower()
     while True:
         if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
@@ -909,25 +909,32 @@ def all_available(start, end):
             distance = []
             
             for z in workDay:
+				#Firstly where is this docNum coming from hai ooo we suppose to take the practice numbers from workDay then search if he available at the users selected time and date which are passed at the top of this function
+
+				# Nathi
+
                 dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
                 dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
                 docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
-                availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+
                 # print(docNum)
                 if start >= dat1 and end <= dat2:
                     #if hes working on that day then we take hes practice number and then 
+					availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
                     for i in availDocDate:
                         date1 = u'{}'.format(i.to_dict()['Start_date'])
                         date2 = u'{}'.format(i.to_dict()['End_date'])
                         # print('Start: ' +date1 + ' End ' + date2)
                         if start != date1 and end != date2:
-        ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT 
+        ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT#############################################
                             #read comment above
-                            Dr = db.collection('Doctors').where(u'PracticeNumber',u'==',i).get()
+                            Dr = db.collection('Doctors').where('PracticeNumber','==',docNum).get()
                             for do in Dr:
                                 docLoc = u'{}'.format(do.to_dict()['Office_Location'])
                             
-                            getDocLoc = loc.geocode(docLoc)
+                            getDocLoc = loca.geocode(docLoc)
+                            print(getDocLoc)
+
                             dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
                             check = docNum in allDoctors
                             
@@ -1023,33 +1030,31 @@ def Booking():
     print('Booking')
     db = firestore.client()
     ###################################################Date
-    resp = 'Please be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\n'
+    resp = '\nPlease be informed that we start booking from 08:00 - 17:00 \n We book based on the availability of the client, then we check the availability of the doctor then we book!!\n'
     resp = resp + '\nWhat date would you like to book for?\nTo enter a date and time slot please press the buttom above writen "Pick Date"...'
     dates = tags(resp)
     slots = selectDT(dates)
-    dates =''
+    #dates =''
     start_dt_tm = slots[0]
     end_dt_tm = slots[1]
     print(start_dt_tm, end_dt_tm)
     ################################################Doctor################################
-    resp = ' To see a doctor who is availbale at your selected date and time, and at a location you want please enter "a" or \nDo you have a specific doctor you would like to see whos in our system then enter "s"'
+    resp = '\nTo see a doctor who is availbale at your selected date and time, and at a location you want please enter "A" or \nDo you have a specific doctor you would like to see whos in our system then enter "S"'
     dec = tags(resp)
 
     while True:
         if dec.lower() == 'a' or dec.lower() == 'available':
-            ##############################################################################
-            
             while True:
                 print('picked near by')
                 #Getting practice number
                 while True:
                     prac_num = all_available(start_dt_tm, end_dt_tm)
-                    if bool(prac_num) == False:
-                        resp = ' I just tried finding a doctor available at the date and time you selected.\nSeems like we cant find a doctor at your specific time frames so would you like to alter the date, if so please enter "yes" or enter "no" or "cancel" to stop the whole process...'
+                    if bool(prac_num) == False or prac_num == None:
+                        resp = '\nI just tried finding a doctor available at the date and time you selected.\nSeems like we cant find a doctor at your specific time frames so would you like to alter the date, if so please enter "Yes" or enter "No" or "Cancel" to stop the whole process...'
                         answer = tags(resp).lower()
                         while True:
-                            if answer == 'yes' or  answer == 'y' or  answer == 'continue' or  answer == 'proceed':
-                                resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            if answer == 'yes' or  answer == 'y' or  answer == 'continue' or  answer == 'proceed' or answer == 'yeah':
+                                resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
                                 dates = tags(resp)
                                 slots = selectDT(dates)
                                 start_dt_tm = slots[0]
@@ -1057,11 +1062,12 @@ def Booking():
                                 print(start_dt_tm, end_dt_tm)
                                 break
                             elif  answer == 'no' or  answer == 'n' or  answer == 'terminate' or  answer == 'cancel':
-                                resp = ' looks like you chose to cancel the process...'
+                                resp = ' \nLooks like you chose to cancel the process...'
                                 db.collection('Meessage').document('111111').update({'Message': resp})
+								#FIX
                                 return
                             else:
-                                resp = ' Sorry could not understand your input please try again remember enter "yes" or "no"...'
+                                resp = '\nSorry could not understand your input please try again remember enter "yes" or "no"...'
                                 answer = tags(resp)
                     else:
                         break
@@ -1069,11 +1075,11 @@ def Booking():
                 while True:
                     status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
                     if status == 'booked':
-                        resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                        resp = '\nSeems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
                         answer = tags(resp).lower()
                         while True:
-                            if answer == 'yes' or  answer == 'y':
-                                resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            if answer == 'yes' or  answer == 'y' or answer == '':
+                                resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
                                 dates = tags(resp)
                                 slots = selectDT(dates)
                                 start_dt_tm = slots[0]
@@ -1083,15 +1089,15 @@ def Booking():
                             elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
                                 return
                             else: 
-                                resp = ' Could not understand your input please try again, remember use yes or no'
+                                resp = '\nCould not understand your input please try again, remember use "Yes" or "No"'
                                 answer = tags(resp).lower()
                         break
                     elif status == 'unavailabe':
-                        resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                        resp = ' \nSeems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
                         answer = tags(resp).lower()
                         while True:
                             if answer == 'yes' or  answer == 'y':
-                                resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                                resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
                                 dates = tags(resp)
                                 slots = selectDT(dates)
                                 start_dt_tm = slots[0]
@@ -1099,11 +1105,12 @@ def Booking():
                                 print(start_dt_tm, end_dt_tm)
                                 break
                             elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                                resp = ' You choose to terminate..'
+                                resp = ' \nYou choose to terminate..'
                                 db.collection('Meessage').document('111111').update({'Message': resp})
+								#FIX
                                 return
                             else: 
-                                resp = ' Could not understand your input please try again, remember use yes or no'
+                                resp = ' \nCould not understand your input please try again, remember use "Yes" or "No"'
                                 answer = tags(resp).lower()
                     else:
                         break
@@ -1115,15 +1122,15 @@ def Booking():
             if bool(prac_num) == False or prac_num == None:
                 print('no prac numb ', str(prac_num), ' return')
                 return
-            ##Check doc status
+            #Check doc status
             while True:
                 status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
                 if status == 'booked':
-                    resp = ' Seems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                    resp = '\nSeems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
                     answer = tags(resp).lower()
                     while True:
                         if answer == 'yes' or  answer == 'y':
-                            resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
                             dates = tags(resp)
                             slots = selectDT(dates)
                             start_dt_tm = slots[0]
@@ -1133,15 +1140,15 @@ def Booking():
                         elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
                             return
                         else: 
-                            resp = ' Could not understand your input please try again, remember use yes or no'
+                            resp = '\nCould not understand your input please try again, remember use "Yes" or "No"'
                             answer = tags(resp).lower()
 
                 elif status == 'unavailabe':
-                    resp = ' Seems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "yes" if not please enter "no" to cancel the process '
+                    resp = '\nSeems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
                     answer = tags(resp).lower()
                     while True:
                         if answer == 'yes' or  answer == 'y' or answer == 'continue' or answer == 'proceed':
-                            resp = ' To change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
+                            resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
                             dates = tags(resp)
                             slots = selectDT(dates)
                             start_dt_tm = slots[0]
@@ -1150,13 +1157,13 @@ def Booking():
                         elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
                             return
                         else: 
-                            resp = ' Could not understand your input please try again, remember use yes or no'
+                            resp = '\nCould not understand your input please try again, remember use "Yes" or "No"'
                             answer = tags(resp).lower()
                 else:
                     break
             break
         else:
-            resp = ' Sorry its either you entered the wrong value, i cant understand you statement please try again.\nRemember enter "s" - to pick a specific doctor or "a" to choose a doctor who is available at the time and slot you selected'
+            resp = '\nSorry its either you entered the wrong value, I cant understand you statement please try again.\nRemember enter "S" - to pick a specific doctor or "A" to choose a doctor who is available at the time and slot you selected'
             dec = tags(resp)
     #After this loop it should display the booking cause it has client id, doctor id, start&end date and time  maybe we could add something for adding a reason for booking
     user = db.collection('users').where('IdNumber','==',client_ID).get()
@@ -1195,7 +1202,7 @@ def Booking():
             #timeloop oesnt do the right thing try sleep or just return like now
             return
         elif confrim_appnt.lower()== 'no' or confrim_appnt.lower() == 'cancel' or confrim_appnt.lower() == 'stop' or confrim_appnt.lower() == 'n':
-            mo = ' Process stoped, if the is anything else i can help you with please ask away, remember i can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
+            mo = ' Process stoped, if the is anything else I can help you with please ask away, remember I can also book, reschedule appointment plus give you so addation information about any disease you instead of "googling your sympotms"'
             db.collection('Meessage').document('111111').update({'Message': mo})
             return
         else: 
@@ -1205,181 +1212,189 @@ def Booking():
  
 def selectDT(dates):
     import datetime
-    from datetime import datetime, timedelta
-    print(dates)
-    dates = dates.split('+')
-    # print('new date is ' + str(dates))
-    # print('the date received is ' + str(dates))
-    start_dt_tm = str(dates[0])
-    #print ('lets go ' + start_dt_tm)
-    start_dt_tm = start_dt_tm[:-3] 
-    #print('the start is ' + start_dt_tm)
-    end_dt_tm = datetime.strptime(start_dt_tm, '%Y-%m-%d %H:%M') + timedelta(minutes=30)
+    from datetime import datetime, timedelta, date
+    def checker(dates):
+      while True:
+        try:
+          start_dt_tm = datetime.strptime(dates,'%Y-%m-%d %H:%M')
+          start_dt_tm = str(start_dt_tm)
+          #print('it got here' + str(start_dt_tm))
+          return start_dt_tm
+        except ValueError as e:
+          mo  = str(dates)+'\nError converting the string to a date and time: \n' + str(e) + ' \nPlease pick a date using the "Pick Date" button above'
+          dates = tags(mo)
+    start_dt_tm = checker(dates)
+
+
+
+    #         mo = 'Please press the button above to pick a date time do not enter it manually..'
+    print('The date recived is ' + str(dates))
+    #start_dt_tm = datetime.strptime(dates,'%Y-%m-%d %H:%M')
+    print( 'After concerting start dt time' + str(start_dt_tm))
+    start_dt_tm = str(start_dt_tm)
+    print('Its a string now')
+    end_dt_tm = datetime.strptime(start_dt_tm, '%Y-%m-%d %H:%M:%S') + timedelta(minutes=30)
+    print("We are at end_dt_time now" + str(end_dt_tm))
     end_dt_tm = str(end_dt_tm)
-    end_dt_tm = end_dt_tm[:-3]
+    print('Both are converted now')
+    # end_dt_tm = end_dt_tm[:-3]
     #print('start is ' + start_dt_tm + ' end is ' + end_dt_tm)
     
     return [start_dt_tm, end_dt_tm]
 
 def selenium():
-    from selenium import webdriver
-    from selenium.webdriver.common.keys import Keys
-    from selenium.webdriver.common.by import By
-    from selenium.webdriver.support.ui import WebDriverWait as WebD
-    from selenium.webdriver.support import expected_conditions as EC
-    from selenium.common.exceptions import NoSuchElementException
-    from selenium.common.exceptions import StaleElementReferenceException
-    from selenium.webdriver.chrome.options import Options
-    import time
 
-    #headles browsing
-    def headless_window():
-        #install chromedriver or any driver that accommodates the browser that you are using
-        #put it in windows C in program files
-        PATH = "C:\Program Files (x86)\chromedriver.exe"
-        # instance of Options class allows
-        # us to configure Headless Chrome
-        options = Options()
-            
-        # this parameter tells Chrome that
-        # it should be run without UI (Headless)
-        options.headless = True
-
-        # initializing webdriver for Chrome with our options
-        tDriver = webdriver.Chrome(PATH,options=options)
-        return tDriver
-
-    all_info=[]
-    
-    def search_results(driver, name):
-    
-        # getting a website
-        driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
-        #accessing the search bar in the website
-        search = driver.find_element(By.ID, 'edit-query-health-az')
-
-        #accepting cookies
-        cookie = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
-        time.sleep(1)
-        cookie.click()
-
-        #searching for a condition on the website
-        search.send_keys(name)
-        search.send_keys(Keys.RETURN)
-        time.sleep(2)
+	from selenium import webdriver
+	from selenium.webdriver.common.keys import Keys
+	from selenium.webdriver.common.by import By
+	from selenium.webdriver.support.ui import WebDriverWait as WebD
+	from selenium.webdriver.support import expected_conditions as EC
+	from selenium.common.exceptions import NoSuchElementException
+	from selenium.common.exceptions import StaleElementReferenceException
+	from selenium.webdriver.chrome.options import Options
+	import time
 
 
-        title =[]
-        new=''
-        new1=''
-        new2=''
-        symptoms = []
-        # getting the title
-        title =driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-        symptoms = driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/div[1]/ul/li")
-        for i, s in zip(title, symptoms):
-            # try:
+	#headles browsing
+	def headless_window():
+		#install chromedriver or any driver that accommodates the browser that you are using
+		#put it in windows C in program files
+		PATH = "C:\Program Files (x86)\chromedriver.exe"
+		# instance of Options class allows
+		# us to configure Headless Chrome
+		options = Options()
+			
+		# this parameter tells Chrome that
+		# it should be run without UI (Headless)
+		options.headless = True
 
-            if(i.text == name):
-                # clicking a link
-                link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-                time.sleep(1)
-                link.click()
+		# initializing webdriver for Chrome with our options
+		tDriver = webdriver.Chrome(PATH,options=options)
+		return tDriver
 
-                wait = WebD(driver, 100)
-                #checks if there's content
-                main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
-                #finds the html or css that contains the content
-                articles = main.find_elements(By.TAG_NAME,"article")
-                
-                for article in articles:
-                    #getting short description about the condition
-                    descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
-                    all_info.append(descrip.text)
+	# Accepting web cookies
+	def accepting_cookies(driver):
+		# getting a website
+			driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
 
-                    #getting the list of symptoms
-                    symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
-                    all_info.append(symptom.text)
+			#accepting cookies
+			cookie = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
+			time.sleep(1)
+			cookie.click()
 
-                    symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
-                    all_info.append(symptoms.text)
-                    
-                    treatment = article.find_element(By.ID,"toc-2")
-                    all_info.append(treatment.text)
+	all_info = []
+	#searching for a disease and getting all the disease a person might possibly have
+	def searching_web(name):
+		accepting_cookies(driver)
+		#accessing the search bar in the website
+		search = driver.find_element(By.ID, 'edit-query')
 
-                    treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
-                    all_info.append(treat1.text)
-                    treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
-                    all_info.append(treat2.text)
-                    treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
-                    all_info.append(treat3.text)
-                for i in all_info:
-                    print('done search')
-                    new = new + i
-                tags(new)
-                return i
-                
-            elif(s.text == name.lower()):
-                # clicking a link
-                link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-                time.sleep(1)
-                link.click()
+		#searching for a condition on the website
+		search.send_keys(name)
+		search.send_keys(Keys.RETURN)
+		time.sleep(10)
 
-                wait = WebD(driver, 100)
-                #checks if there's content
-                main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
-                #finds the html or css that contains the content
-                articles = main.find_elements(By.TAG_NAME,"article")
+		# list all disease might possibly have
+		all_disease = driver.find_elements(By.CLASS_NAME,"card__title")
+		
+		# show all possible diseases 
+		for disease in all_disease:
+			print(disease.text)
+		print("These are all the diseases based on the symptoms you've searched")
+		disease_Name = input("Please type the name of the disease as it is, e.g Whooping cough or Hay fever: ").capitalize()
+		
+		# show all possible diseases based on symptoms
+		time.sleep(3)
+		for disease in all_disease:
+		
+			if(disease_Name == disease.text):
+				driver.find_element(By.LINK_TEXT, disease_Name).click()
 
-                for article in articles:
-                    heading = article.find_element(By.CSS_SELECTOR,"#main-article > h1")
-                    all_info.append(heading.text)
-                    #getting short description about the condition
-                    descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
-                    all_info.append(descrip.text)
+				if(disease_Name == "Cough"):
+					wait = WebD(driver, 100)
+					#checks if there's content
+					main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+					#finds the html or css that contains the content
+					articles = main.find_elements(By.ID,"main-article")
 
-                    #getting the list of symptoms
-                    symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
-                    all_info.append(symptom.text)
+					for article in articles:
+						# Name of the disease
+						heading = article.find_element(By.CLASS_NAME,"page-title")
+						all_info.append(heading.text)
 
-                    symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
-                    all_info.append(symptoms.text)
-                    
-                    treatment = article.find_element(By.ID,"toc-2")
-                    all_info.append(treatment.text)
+						# summary of the disease
+						summary = article.find_element(By.CLASS_NAME,"page-summary")
+						all_info.append(summary.text)
 
-                    treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
-                    all_info.append(treat1.text)
-                    treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
-                    all_info.append(treat2.text)
-                    treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
-                    all_info.append(treat3.text)
-                for i in all_info:
-                    print('done search')
-                    new1 = new1 + i
-                tags(new1)
-                return i
+						# causes 
+						symptom = article.find_element(By.ID,"toc-3")
+						all_info.append(symptom.text)
 
-            elif (i.text != name):
-                tags("I'm sorry, that term is not available on this website")
-                print('done search')
-                new2 = new2 + i
-                tags(new2) 
-                break
-        
-    sel = "enter condition or symptoms:"
-    searchNam = tags(sel).capitalize()  
-    sel = 'Please wait as I gather information...'
-    db.collection(u'Meessage').document('111111').update({'Message' : sel})
-    if (len(searchNam) == 0):
-        sel = "Sorry i didnt get that please try again..\nEnter condition: "
-        searchNam = tags(sel).capitalize()
-        driver = headless_window()
-        articles = search_results(driver, searchNam)
-    
-    else:
-        driver = headless_window()
-        articles = search_results(driver, searchNam)
+						symptom1 = article.find_element(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(26)")
+						all_info.append(symptom1.text)
+
+						# treatment
+						treatment = article.find_element(By.ID,"toc-0")
+						all_info.append(treatment.text)
+
+						treat = article.find_element(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(8)")
+						all_info.append(treat.text)
+
+				else:
+
+					wait = WebD(driver, 100)
+					#checks if there's content
+					main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+					#finds the html or css that contains the content
+					articles = main.find_elements(By.ID,"main-article")
+
+					for article in articles:
+						# Name of the disease
+						heading = article.find_element(By.CLASS_NAME,"page-title")
+						all_info.append(heading.text)
+
+						# summary of the disease
+						summary = article.find_element(By.CLASS_NAME,"page-summary")
+						all_info.append(summary.text)
+
+						# symptoms
+						symptom = article.find_element(By.ID,"toc-0")
+						all_info.append(symptom.text)
+						
+						symptoms2 = article.find_elements(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(9)")
+						for symptom in symptoms2:
+							all_info.append(symptom.text)
+
+						
+						
+						# treatment
+						treatment = article.find_element(By.ID,"toc-2")
+						all_info.append(treatment.text)
+
+						treat = article.find_element(By.CSS_SELECTOR,"body div[role='presentation'] main[id='main-content'] article[id='main-article'] p:nth-child(1)")
+						all_info.append(treat.text)
+
+						treat2 =article.find_element(By.CSS_SELECTOR,"body div[role='presentation'] main[id='main-content'] article[id='main-article'] p:nth-child(1)")
+						all_info.append(treat2.text)
+
+				# To display specific information from the web
+			for i in all_info:
+				print(i)
+				##NATHI WE NEED SIPOPO
+			return i
+
+	search_Name = tags("Please enter your condition or symptoms ")
+
+	if(len(search_Name)==0):
+		search_Name = "Please enter your condition or symptoms"
+		driver = headless_window()
+		web_search = searching_web(search_Name)
+
+	else:
+		driver = headless_window()
+		web_search = searching_web(search_Name)
+
+	time.sleep(5)
 
 def data():
         db = firestore.client()
@@ -1394,44 +1409,13 @@ def data():
         return user_input
 
 def tags(mo):
-    import asyncio
-    import json
-    import websockets
-
-
-    async def handle_connection(websocket, path):
-        while True:
-            # Prepare the response message to send to react native
-            send = mo
-            #sends data back to react native
-            response = {
-            'id': message_id,
-            'sender': 'Server',
-            'text':  send,
-            }
-            await websocket.send(json.dumps(response))
-            # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
-            message_id = data.get('id', 'unknown')
-            
-            ############## will it wait and to take the answer or must we set it 
-            
-            message = await websocket.recv()
-            data = json.loads(message)
-            
-            userInput = data['text']
-
-            #data from react native
-            print(userInput)
-            return userInput
-
-            
-            
-        
-
-    start_server = websockets.serve(handle_connection, '0.0.0.0', 8000)
-
-    asyncio.get_event_loop().run_until_complete(start_server)
-    asyncio.get_event_loop().run_forever()
+    db = firestore.client()
+    db.collection(u'Meessage').document('111111').update({'Message' : mo})
+    user_input= ''
+    time_loop()
+    bot_respon =  db.collection('Meessage').document('123457').get()
+    user_input= u'{}'.format(bot_respon.to_dict()['Message']) 
+    return user_input
 
 def time_loop():
     db.collection('Meessage').document('123457').update({'Message':""}) 
@@ -1447,54 +1431,7 @@ def time_loop():
             print('break')
             break
 
+
 print('started')
-
-#########This while loop need to be a function
-# while True:
-#         #print('Mo: ' + chatbot_response(input('You: ') ))
-#         #fetch from react native
-
-#         #tag = tags()
-#         # if tag == 'salutation' or  tag == 'booking' or  tag == 'reschedule' or tag == 'cancel' or tag == 'checking' or tag == 'medical':
-#         #     tags()
-#         # else:
-#         #     data()
-#         data()
-#tags()
-import asyncio
-import json
-import websockets
-
-
-async def handle_connection(websocket, path):
-    while True:
-        message = await websocket.recv()
-        data = json.loads(message)
-        
-        userInput = data['text']
-
-        #data from react native
-        print(userInput)
-        
-        # Use the get method to retrieve the value of the id field, with a default value of 'unknown'
-        message_id = data.get('id', 'unknown')
-
-        # Prepare the response message to send to react native
-        send = chatbot_response(userInput)
-
-        #sends data back to react native
-        response = {
-        'id': message_id,
-        'sender': 'Server',
-        'text':  send,
-        }
-        await websocket.send(json.dumps(response))
-        
-    
-
-start_server = websockets.serve(handle_connection, '0.0.0.0', 8000)
-
-asyncio.get_event_loop().run_until_complete(start_server)
-asyncio.get_event_loop().run_forever()
-    
-
+while True:
+    data()
