@@ -26,126 +26,127 @@ def headless_window():
   tDriver = webdriver.Chrome(PATH,options=options)
   return tDriver
 
-
-
-all_info=[]
-def search_results(driver, name):
- 
+# Accepting web cookies
+def accepting_cookies(driver):
   # getting a website
-  driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
-  #accessing the search bar in the website
-  search = driver.find_element(By.ID, 'edit-query-health-az')
+    driver.get("https://nidirect.gov.uk/campaigns/illnesses-and-conditions")
 
-  #accepting cookies
-  cookie = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
-  time.sleep(1)
-  cookie.click()
+    #accepting cookies
+    cookie = driver.find_element(By.XPATH,"//*[@id='popup-buttons']/button[1]")
+    time.sleep(1)
+    cookie.click()
+
+all_info = []
+#searching for a disease and getting all the disease a person might possibly have
+def searching_web(name):
+  accepting_cookies(driver)
+  #accessing the search bar in the website
+  search = driver.find_element(By.ID, 'edit-query')
 
   #searching for a condition on the website
   search.send_keys(name)
   search.send_keys(Keys.RETURN)
   time.sleep(10)
 
-
-  title =[]
-  symptoms = []
-  # getting the title
-  title =driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-  symptoms = driver.find_elements(By.XPATH,"//*[@id='health-conditions-results']/ol/li/div[1]/ul/li")
-  for i, s in zip(title, symptoms):
-    # try:
-
-    if(i.text == name):
-      # clicking a link
-      link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-      time.sleep(1)
-      link.click()
-
-      wait = WebD(driver, 100)
-      #checks if there's content
-      main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
-      #finds the html or css that contains the content
-      articles = main.find_elements(By.TAG_NAME,"article")
-      
-      for article in articles:
-        #getting short description about the condition
-        descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
-        all_info.append(descrip.text)
-
-        #getting the list of symptoms
-        symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
-        all_info.append(symptom.text)
-
-        symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
-        all_info.append(symptoms.text)
-        
-        treatment = article.find_element(By.ID,"toc-2")
-        all_info.append(treatment.text)
-
-        treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
-        all_info.append(treat1.text)
-        treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
-        all_info.append(treat2.text)
-        treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
-        all_info.append(treat3.text)
-      for i in all_info:
-        print(i)
-      return i
-      
-    elif(s.text == name.lower()):
-      # clicking a link
-      link = driver.find_element(By.XPATH,"//*[@id='health-conditions-results']/ol/li/h3/a")
-      time.sleep(1)
-      link.click()
-
-      wait = WebD(driver, 100)
-      #checks if there's content
-      main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
-      #finds the html or css that contains the content
-      articles = main.find_elements(By.TAG_NAME,"article")
-
-      for article in articles:
-        heading = article.find_element(By.CSS_SELECTOR,"#main-article > h1")
-        all_info.append(heading.text)
-        #getting short description about the condition
-        descrip = article.find_element(By.XPATH,"//*[@id='main-article']/div[2]")
-        all_info.append(descrip.text)
-
-        #getting the list of symptoms
-        symptom = article.find_element(By.CSS_SELECTOR,"#main-article > p:nth-child(8)")
-        all_info.append(symptom.text)
-
-        symptoms = article.find_element(By.XPATH,"//*[@id='main-article']/ul[1]")
-        all_info.append(symptoms.text)
-        
-        treatment = article.find_element(By.ID,"toc-2")
-        all_info.append(treatment.text)
-
-        treat1 = article.find_element(By.XPATH,"//*[@id='main-article']/p[14]")
-        all_info.append(treat1.text)
-        treat2 = article.find_element(By.XPATH,"//*[@id='main-article']/p[15]")
-        all_info.append(treat2.text)
-        treat3 = article.find_element(By.XPATH,"//*[@id='main-article']/p[16]")
-        all_info.append(treat3.text)
-      for i in all_info:
-        print(i)
-      return i
-
-    elif (i.text != name):
-      i ="I'm sorry, that term is not available on this website"
-      print(i) 
-      break
-   
-searchNam = input("enter condition or symptoms: ").capitalize()
-
-if (len(searchNam) == 0):
-  searchNam = input("enter condition or symptoms: ").capitalize()
-  driver = headless_window()
-  articles = search_results(driver, searchNam)
+  # list all disease might possibly have
+  all_disease = driver.find_elements(By.CLASS_NAME,"card__title")
+ 
+  # show all possible diseases 
+  for disease in all_disease:
+    print(disease.text)
+  print("These are all the diseases based on the symptoms you've searched")
+  disease_Name = input("Please type the name of the disease as it is, e.g Whooping cough or Hay fever: ").capitalize()
   
+  # show all possible diseases based on symptoms
+  time.sleep(3)
+  for disease in all_disease:
+  
+    if(disease_Name == disease.text):
+      driver.find_element(By.LINK_TEXT, disease_Name).click()
+
+      if(disease_Name == "Cough"):
+        wait = WebD(driver, 100)
+        #checks if there's content
+        main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+        #finds the html or css that contains the content
+        articles = main.find_elements(By.ID,"main-article")
+
+        for article in articles:
+          # Name of the disease
+          heading = article.find_element(By.CLASS_NAME,"page-title")
+          all_info.append(heading.text)
+
+          # summary of the disease
+          summary = article.find_element(By.CLASS_NAME,"page-summary")
+          all_info.append(summary.text)
+
+          # causes 
+          symptom = article.find_element(By.ID,"toc-3")
+          all_info.append(symptom.text)
+
+          symptom1 = article.find_element(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(26)")
+          all_info.append(symptom1.text)
+
+          # treatment
+          treatment = article.find_element(By.ID,"toc-0")
+          all_info.append(treatment.text)
+
+          treat = article.find_element(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(8)")
+          all_info.append(treat.text)
+
+      else:
+
+        wait = WebD(driver, 100)
+        #checks if there's content
+        main = wait.until(EC.presence_of_element_located((By.ID,"main-content")))
+        #finds the html or css that contains the content
+        articles = main.find_elements(By.ID,"main-article")
+
+        for article in articles:
+          # Name of the disease
+          heading = article.find_element(By.CLASS_NAME,"page-title")
+          all_info.append(heading.text)
+
+          # summary of the disease
+          summary = article.find_element(By.CLASS_NAME,"page-summary")
+          all_info.append(summary.text)
+
+          # symptoms
+          symptom = article.find_element(By.ID,"toc-0")
+          all_info.append(symptom.text)
+        
+          symptoms2 = article.find_elements(By.CSS_SELECTOR,"body > div:nth-child(6) > main:nth-child(4) > article:nth-child(1) > ul:nth-child(9)")
+          for symptom in symptoms2:
+            all_info.append(symptom.text)
+
+          
+        
+          # treatment
+          treatment = article.find_element(By.ID,"toc-2")
+          all_info.append(treatment.text)
+
+          treat = article.find_element(By.CSS_SELECTOR,"body div[role='presentation'] main[id='main-content'] article[id='main-article'] p:nth-child(1)")
+          all_info.append(treat.text)
+
+          treat2 =article.find_element(By.CSS_SELECTOR,"body div[role='presentation'] main[id='main-content'] article[id='main-article'] p:nth-child(1)")
+          all_info.append(treat2.text)
+
+      # To display specific information from the web
+      for i in all_info:
+        print(i)
+      return i
+
+
+
+search_Name = input("Please enter your condition or symptoms ")
+
+if(len(search_Name)==0):
+  search_Name = "Please enter your condition or symptoms"
+  driver = headless_window()
+  web_search = searching_web(search_Name)
+
 else:
   driver = headless_window()
-  articles = search_results(driver, searchNam)
- 
+  web_search = searching_web(search_Name)
 
-
+time.sleep(5)
