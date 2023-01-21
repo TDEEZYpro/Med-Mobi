@@ -892,6 +892,8 @@ def all_available(start, end):
     while getLoc ==None:
         resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
         userloc = tags(resp).lower()
+        if userloc == 'cancel' or userloc == 'terminate':
+            return
         getLoc = loc.geocode(userloc)
    
     print(getLoc.address)
@@ -900,51 +902,67 @@ def all_available(start, end):
     answer = tags(resp).lower()
     while True:
         if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
-            workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
+            
             # the where with doc id is useless for any available doctor
             counter = 1
             #counter is for displaying doctor 
 
             allDoctors=[]
             distance = []
-            
+
+            ##########First we collect doctors available of the day the doctors is################
+            print('we checking the available-s now')
+            workDay = db.collection('Operational_Days').where('operational_type','==','working').get()
+            working = []
             for z in workDay:
 				#Firstly where is this docNum coming from hai ooo we suppose to take the practice numbers from workDay then search if he available at the users selected time and date which are passed at the top of this function
-
 				# Nathi
-
                 dat1 = u'{}'.format(z.to_dict()['start_dt_time'])
                 dat2 = u'{}'.format(z.to_dict()['end_dt_time'])
                 docNum = u'{}'.format(z.to_dict()['Doctor_ID'])
 
                 # print(docNum)
                 if start >= dat1 and end <= dat2:
-                    #if hes working on that day then we take hes practice number and then 
-					availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
-                    for i in availDocDate:
+                    check = docNum in working
+                    if check == False:
+                        working.append(docNum)
+                    
+                #if hes working on that day then we take hes practice number and then
+
+            ##############Collecting doctors not booked on the samed they want to book################
+            print('we checking the not booked now')
+            available = []
+            for docNum in working:
+                availDocDate = db.collection('Appointments').where('Doctor_Pract_Number','==',docNum).get()
+                for i in availDocDate:
                         date1 = u'{}'.format(i.to_dict()['Start_date'])
                         date2 = u'{}'.format(i.to_dict()['End_date'])
                         # print('Start: ' +date1 + ' End ' + date2)
                         if start != date1 and end != date2:
-        ########################################################################MUST CALCULATE DISTANCE BETWEEN HERE IF LESS THAN OR == TO 100KM THEN APPEND ELSE NEXT#############################################
-                            #read comment above
-                            Dr = db.collection('Doctors').where('PracticeNumber','==',docNum).get()
-                            for do in Dr:
-                                docLoc = u'{}'.format(do.to_dict()['Office_Location'])
-                            
-                            getDocLoc = loca.geocode(docLoc)
-                            print(getDocLoc)
+                            check = docNum in available
+                            if check == False:
+                                available.append(docNum)
+        
+            ############getting doctors that are 200k or less close#################
+            print('we checking the distance now')
+            for docNum in available:
+                Dr = db.collection('Doctors').where('PracticeNumber','==',docNum).get()
+                for do in Dr:
+                    docLoc = u'{}'.format(do.to_dict()['Office_Location'])
 
-                            dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
-                            check = docNum in allDoctors
-                            
-                            if check == False and dis <= 200:
-                                distance.append(dis)
-                                allDoctors.append(docNum)
-                                print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
-            print( len(allDoctors))
-            print(allDoctors)
-            #Checks if the are doctors available if not it breaks
+                getDocLoc = loca.geocode(docLoc)
+                if getDocLoc == None:
+                    print(docLoc)
+                    print('this doctors locations cannot be found\n')
+                print(getDocLoc)
+                dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
+                check = docNum in allDoctors
+                if check == False and dis <= 200:
+                    distance.append(dis)
+                    allDoctors.append(docNum)
+                    print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
+            print('Number of doctors gathered: ' + str(len(allDoctors)))
+            print('Number of distances gathered: ' + str(len(distance)))        
             if len(allDoctors) == 0:
                     respo = ' Looks like the are no doctors available at the times you, would you like to change maybe the time and date if so please enter yes or enter cancel or no to stop the process.'
                     respond = tags(respo)
@@ -952,7 +970,6 @@ def all_available(start, end):
                         Booking()
                     elif respond.lower() == 'no' or respond.lower() == 'n':
                         return
-                    
             else:
                 respo =' Heres a list of doctors available: '
                 #sorted by distance between
@@ -1007,22 +1024,8 @@ def all_available(start, end):
             answer = tags(resp).lower()
 
 
-    # while True:
-    #     if getLoc !=None:
-    #         resp = ' Please confirm, is this the location you were looking for\n\n' + str(getLoc.address) + ' \n\nPlease enter "yes" to confirm that it is the location or around that area or "no" to this is not the location you were looking for and you want to enter again:'
-    #         answer = tags(resp).lower()
-    #         if answer == 'yes' or answer == 'y' or answer == 'it is' or 'continue' or answer =='agree' or answer == 'agree':
-    #             break
-    #         elif answer == 'no' or answer == 'n' or answer == 'it is not' or 'no its not':
-    #             resp = ' okay lets try get the location. Please enter the location/address at which you are looking for a doctor in: '
-    #             userloc = tags(resp).lower()              
-    #             getLoc = loc.geocode(userloc)
-    #     else:
-    #         resp = ' Could not find your specific location please try entering again. \n\nTry not to use abbriviation like "str" write the word in full, "street", and try write it in the following way: "street number and name, city, zip code" or "Province City Township zip code'
-    #         userloc = tags(resp).lower()
-    #         getLoc = loc.geocode(userloc)
-    #     break
-        
+def doc_definishion(num):
+    print('different dos start here')
 
 
 def Booking():
