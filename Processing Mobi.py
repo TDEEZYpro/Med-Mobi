@@ -948,7 +948,16 @@ def all_available(start, end):
             for docNum in available:
                 Dr = db.collection('Doctors').where('PracticeNumber','==',docNum).get()
                 for do in Dr:
-                    print(getDocLoc)
+                    docLoc = u'{}'.format(do.to_dict()['OfficeLocation'])
+
+                getDocLoc = loca.geocode(docLoc)
+                if getDocLoc == None:
+                    print(docLoc)
+                    print('this doctors locations cannot be found\n')
+                print(getDocLoc)
+                dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
+                check = docNum in allDoctors
+                if check == False and dis <= 200:
                     distance.append(dis)
                     allDoctors.append(docNum)
                     print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
