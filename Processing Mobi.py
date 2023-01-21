@@ -198,7 +198,7 @@ def find_doc():
                         pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
                         pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
                         pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
-                        pLocation = u'{}'.format(doc.to_dict()['Office_Location'])
+                        pLocation = u'{}'.format(doc.to_dict()['OfficeLocation'])
             
                     mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tOffice Location: ' + str(pLocation)
                     counter =+ 1
@@ -242,7 +242,7 @@ def find_doc():
                             pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
                             pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
                             pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
-                            pLocation = u'{}'.format(doc.to_dict()['Office_Location'])
+                            pLocation = u'{}'.format(doc.to_dict()['OfficeLocation'])
                 
                         mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tOffice Location: ' + str(pLocation)
                         counter =+ 1
@@ -283,7 +283,7 @@ def find_doc():
                         pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
                         pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
                         pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
-                        pLocation = u'{}'.format(doc.to_dict()['Office_Location'])
+                        pLocation = u'{}'.format(doc.to_dict()['OfficeLocation'])
             
                     mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tOffice Location: ' + str(pLocation)
                     counter =+ 1
@@ -322,7 +322,7 @@ def find_doc():
                         pDoctorI = u'{}'.format(doc.to_dict()['Initials'])
                         pDoctorS = u'{}'.format(doc.to_dict()['Surname'])
                         pDoctorSp = u'{}'.format(doc.to_dict()['Specialization'])
-                        pLocation = u'{}'.format(doc.to_dict()['Office_Location'])
+                        pLocation = u'{}'.format(doc.to_dict()['OfficeLocation'])
             
                     mo = mo + '\n\t\t\tNumber: '+ str(counter) +'\n\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\tOffice Location: ' + str(pLocation)
                     counter =+ 1
@@ -948,16 +948,7 @@ def all_available(start, end):
             for docNum in available:
                 Dr = db.collection('Doctors').where('PracticeNumber','==',docNum).get()
                 for do in Dr:
-                    docLoc = u'{}'.format(do.to_dict()['Office_Location'])
-
-                getDocLoc = loca.geocode(docLoc)
-                if getDocLoc == None:
-                    print(docLoc)
-                    print('this doctors locations cannot be found\n')
-                print(getDocLoc)
-                dis = round((hs.haversine((getLoc.latitude,getLoc.longitude),(getDocLoc.latitude,getDocLoc.longitude),unit=Unit.METERS)/1000),0)
-                check = docNum in allDoctors
-                if check == False and dis <= 200:
+                    print(getDocLoc)
                     distance.append(dis)
                     allDoctors.append(docNum)
                     print('Dr: ' + str(docNum) + '\nKM to user: ' + str(dis)) 
@@ -979,7 +970,7 @@ def all_available(start, end):
                         Initial = u'{}'.format(b.to_dict()['Initials'])
                         Surname = u'{}'.format(b.to_dict()['Surname'])
                         Spech = u'{}'.format(b.to_dict()['Specialization'])
-                        loc = u'{}'.format(b.to_dict()['Office_Location'])
+                        loc = u'{}'.format(b.to_dict()['OfficeLocation'])
                         # timeslot = u'{}'.format(b.to_dict()['End_date'])
                         respo = respo + '\nNumber: ' + str(counter)+ '\nDoctor: Dr '+ str(Initial) + ' '+ str(Surname)+ '\nSpecialization: ' + str(Spech) + '\nOffice Location: ' + str(loc) + '\nRequested Time: '+ str(start)+ ' to '+ str(end) + '\nDistance to doctor: ' + str(distance[counter-1])
                         counter+=1
@@ -993,8 +984,10 @@ def all_available(start, end):
                 
                 while True:
                     x = select.isnumeric()
+                    print(x)
                     if x == True and int(select) <= counter:
-                        prac_num = allDoctors[(int(select) -1)]
+                        x = int(select)-1
+                        prac_num = allDoctors[x]
                         print(prac_num)
                         #if x is a number and value enter is not greater than the last value count was
                         #display the doctor 
@@ -1003,7 +996,7 @@ def all_available(start, end):
                             Initial = u'{}'.format(det.to_dict()['Initials'])
                             Surname = u'{}'.format(det.to_dict()['Surname'])
                             Spech = u'{}'.format(det.to_dict()['Specialization'])
-                            loc = u'{}'.format(det.to_dict()['Office_Location'])
+                            loc = u'{}'.format(det.to_dict()['OfficeLocation'])
                         respo = '\nDoctor: Dr '+ Initial+ ' '+ Surname+ '\nSpecialization: ' + Spech + '\nOffice Location: ' + loc + '\nDistance From You: ' + str(dis) + '\nRequested Timeslot: ' + str(start) + ' Till ' + str(end)
                         db.collection('Meessage').document('111111').update({'Message': respo})
                         return prac_num
@@ -1047,7 +1040,6 @@ def Booking():
 
     while True:
         if dec.lower() == 'a' or dec.lower() == 'available':
-            while True:
                 print('picked near by')
                 #Getting practice number
                 while True:
@@ -1074,52 +1066,10 @@ def Booking():
                                 answer = tags(resp)
                     else:
                         break
-                #Docstatus
-                while True:
-                    status = doc_status(prac_num, start_dt_tm,end_dt_tm).lower()
-                    if status == 'booked':
-                        resp = '\nSeems like youre doctor is booked on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
-                        answer = tags(resp).lower()
-                        while True:
-                            if answer == 'yes' or  answer == 'y' or answer == '':
-                                resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
-                                dates = tags(resp)
-                                slots = selectDT(dates)
-                                start_dt_tm = slots[0]
-                                end_dt_tm = slots[1]
-                                print(start_dt_tm, end_dt_tm)
-                                break 
-                            elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                                return
-                            else: 
-                                resp = '\nCould not understand your input please try again, remember use "Yes" or "No"'
-                                answer = tags(resp).lower()
-                        break
-                    elif status == 'unavailabe':
-                        resp = ' \nSeems like youre doctor is unavailable on the same date and time you want, would you like to change, the booking date or time or both if so please enter "Yes" if not please enter "No" to cancel the process '
-                        answer = tags(resp).lower()
-                        while True:
-                            if answer == 'yes' or  answer == 'y':
-                                resp = '\nTo change a date or time or both please press the button above written "Pick Date", to select one or the other or both...'
-                                dates = tags(resp)
-                                slots = selectDT(dates)
-                                start_dt_tm = slots[0]
-                                end_dt_tm = slots[1]
-                                print(start_dt_tm, end_dt_tm)
-                                break
-                            elif  answer == 'no' or  answer == 'n' or  answer == 'cancel' or  answer == 'terminate':
-                                resp = ' \nYou choose to terminate..'
-                                db.collection('Meessage').document('111111').update({'Message': resp})
-								#FIX
-                                return
-                            else: 
-                                resp = ' \nCould not understand your input please try again, remember use "Yes" or "No"'
-                                answer = tags(resp).lower()
-                    else:
-                        break
                 break
+            
 
-
+#im back now but let me finish here
         elif dec.lower() == 's' or dec.lower() == 'specific': 
             prac_num = find_doc()
             if bool(prac_num) == False or prac_num == None:
@@ -1178,7 +1128,7 @@ def Booking():
         pDoctorI = u'{}'.format(do.to_dict()['Initials'])
         pDoctorS = u'{}'.format(do.to_dict()['Surname'])
         pDoctorSp = u'{}'.format(do.to_dict()['Specialization'])
-        pLocation = u'{}'.format(doc.to_dict()['Office_Location'])
+        pLocation = u'{}'.format(do.to_dict()['OfficeLocation'])
     resp = 'Please confrirm your booking to me.\n\t\t\t\tPatient Name: '+  str(pName) +' '+  str(pSurname) +'\n\t\t\t\tDoctor: Dr '+  str(pDoctorI) + ' '+ str(pDoctorS) +' '+ '\n\t\t\t\tDoctor Specialization: ' + str(pDoctorSp) + '\n\t\t\t\tDoctor Location: '+ str(pLocation)+'\n\t\t\t\tAppointment Starts: ' + str(start_dt_tm) + '\n\t\t\t\tAppointment ends: ' + str(end_dt_tm) + '\nPlease enter "Yes" to accept this booking or "No" to cancel booking process'
     confrim_appnt = tags(resp)
     while True:
